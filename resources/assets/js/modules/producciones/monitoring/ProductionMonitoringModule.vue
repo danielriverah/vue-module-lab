@@ -9,20 +9,34 @@
       :error="error"
     />
 
+    <ProductionMonitoringRenderer
+      :production="production"
+      :detail="detail"
+      :preview="normalizedPreview"
+      :renderer-data="rendererData"
+      :selected-date="selectedDate"
+      :rendering="rendering"
+      @request-render="onRequestRender"
+      @render-ready="onRenderReady"
+      @render-error="onRenderError"
+    />
+
     <div class="card-panel amber lighten-5 amber-text text-darken-4 pm-next-panel">
       <strong>Integración parcial:</strong>
-      Renderer y Actions se integrarán en las siguientes tareas.
+      Actions se integrará en la siguiente tarea.
     </div>
   </section>
 </template>
 
 <script>
 import ProductionMonitoringViewer from './components/ProductionMonitoringViewer.vue';
+import ProductionMonitoringRenderer from './components/ProductionMonitoringRenderer.vue';
 
 export default {
   name: 'ProductionMonitoringModule',
   components: {
-    ProductionMonitoringViewer
+    ProductionMonitoringViewer,
+    ProductionMonitoringRenderer
   },
   props: {
     production: {
@@ -78,6 +92,18 @@ export default {
         svg: Object.assign({ exists: false, url: null, key: null }, incoming.svg || {}),
         png: Object.assign({ exists: false, url: null, key: null }, incoming.png || {})
       };
+    }
+  },
+  methods: {
+    onRequestRender(payload) {
+      this.$emit('request-render', payload);
+      this.$emit('render', payload);
+    },
+    onRenderReady(payload) {
+      this.$emit('render-ready', payload);
+    },
+    onRenderError(payload) {
+      this.$emit('render-error', payload);
     }
   }
 };
