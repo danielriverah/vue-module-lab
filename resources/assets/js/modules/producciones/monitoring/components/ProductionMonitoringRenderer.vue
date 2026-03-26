@@ -54,10 +54,6 @@
 export default {
   name: 'ProductionMonitoringRenderer',
   props: {
-    production: {
-      type: Object,
-      required: true
-    },
     detail: {
       type: Object,
       default: null
@@ -171,7 +167,6 @@ export default {
           imageUrl: data.imageUrl || null,
           pngSource: data.imageUrl || null,
           metadata: {
-            productionId: this.production && this.production.produccion_id ? this.production.produccion_id : null,
             detailId: this.detail && this.detail.id ? this.detail.id : null,
             selectedDate: this.selectedDate,
             source: data.svgContent || data.imageUrl ? 'rendererData' : 'preview-json'
@@ -209,7 +204,6 @@ export default {
       this.lastRequestSignature = signature;
 
       this.$emit('request-render', {
-        production: this.production,
         detail: this.detail,
         selectedDate: this.selectedDate,
         reason: 'missing-preview-and-render-data'

@@ -51,6 +51,7 @@
 - Se cerró la Tarea 3 (Actions) al 100%: validación de habilitación/deshabilitación y verificación de emisiones (`update`, `change-date`, `render`, `save-svg`, `save-png`, `save-all`).
 - Se cerró la Tarea 4 (Integración) al 100%: flujo completo validado (visualización, request-render, render-ready, save-svg, save-png, save-all) y payloads unificados desde `ProductionMonitoringModule.vue`.
 - Se agregaron y ejecutaron pruebas unitarias locales para Actions/Renderer/Module; se corrigió una incidencia de contexto en métodos al validar payloads de integración.
+- Se ajustó Renderer para cumplir contrato de props solicitado (`detail`, `preview`, `rendererData`, `selectedDate`, `rendering`) y mantener emisiones `render-ready`, `render-error`, `request-render`.
 
 ---
 

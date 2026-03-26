@@ -1,7 +1,6 @@
 <template>
   <section class="pm-module">
     <ProductionMonitoringViewer
-      :production="production"
       :detail="detail"
       :preview="normalizedPreview"
       :selected-date="selectedDate"
@@ -10,7 +9,6 @@
     />
 
     <ProductionMonitoringRenderer
-      :production="production"
       :detail="detail"
       :preview="normalizedPreview"
       :renderer-data="effectiveRenderData"
