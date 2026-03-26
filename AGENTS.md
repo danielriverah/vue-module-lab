@@ -1,41 +1,37 @@
 # AGENTS.md — Proyecto principal `vue-module-lab`
 
-Este archivo define cómo planear y ejecutar el módulo **Monitoring Scene UI** con una dinámica circular por tarea.
-
 ## Objetivo operativo
-Implementar el módulo `ProductionMonitoringModule` dividido en:
-1. `ProductionMonitoringViewer`
-2. `ProductionMonitoringRenderer`
-3. `ProductionMonitoringActions`
-4. Integración de las tres piezas
+Implementar el módulo Monitoring con 4 tareas:
+1. Viewer
+2. Renderer
+3. Actions
+4. Integración
 
-## Regla de trabajo (ciclo circular obligatorio)
-Cada tarea debe iterar en este orden y repetirlo hasta cerrar criterios:
+## Ruta oficial de creación (obligatoria)
+Toda creación del módulo debe vivir en:
 
-1. **Creación**
-   - Implementar alcance mínimo funcional.
-   - Mantener desacoplamiento (sin persistencia ni llamadas HTTP dentro de componentes presentacionales).
-2. **Revisión**
-   - Revisar props, emits, estados derivados y UX de estados vacíos/error/loading.
-   - Verificar que no se rompa el contrato de datos (`production`, `detail`, `preview`, `rendererData`).
-3. **Testing**
-   - Probar flujo feliz y casos borde.
-   - Registrar resultados y ajustar pendientes.
-4. **Volver a Creación**
-   - Tomar hallazgos de testing para siguiente iteración.
+`resources/assets/js/modules/producciones/monitoring`
 
-## Definición de terminado por tarea
-- Props y eventos documentados.
+Si una tarea propone crear archivos fuera de esa ruta, primero se corrige el plan.
+
+## Regla de trabajo (ciclo circular)
+Cada tarea itera de forma obligatoria:
+1. **Creación** (en ruta oficial)
+2. **Revisión** (contratos + desacoplamiento)
+3. **Testing** (feliz + bordes)
+4. **Nueva creación** (ajustes por hallazgos)
+
+## Definición de terminado
+- Props/emits documentados.
 - Estados clave cubiertos (`sin detalle`, `cargando`, `error`, `sin preview`, `con preview`).
-- Validación manual de botones/acciones habilitadas.
-- Evidencia breve en README (progreso y siguiente prompt sugerido).
+- Evidencia de testing.
+- Progreso y próximo prompt actualizados en README.
 
 ## Convención de progreso
-Usar estatus por tarea:
 - `Pendiente`
 - `En progreso`
 - `En revisión`
 - `En testing`
 - `Cerrada`
 
-y un porcentaje estimado de avance (0–100%).
+Con porcentaje estimado (0–100%).
