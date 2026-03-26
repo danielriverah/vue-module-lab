@@ -143,6 +143,9 @@ Cada tarea debe ejecutarse como:
 ### Prompt 1 — Viewer
 > Crea `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringViewer.vue` con props `production`, `detail`, `preview`, `selectedDate`, `loading`, `error`; muestra metadata, previews y estados vacíos/error sin lógica HTTP/AWS/persistencia y siguiendo `docs/ui_reglasgenerales.md`.
 
+#### Subprompt 1.1 — Cierre de Viewer
+> Finaliza Viewer: valida checklist (`loading`, `error`, `sin detalle`, `preview png/svg`), corrige pendientes, integra en `ProductionMonitoringModule.vue` si aplica y actualiza `docs/progreso.md` marcando la tarea como `Cerrada` (100%) o con bloqueo explícito.
+
 ### Prompt 2 — Renderer
 > Crea `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringRenderer.vue` que reciba `detail`, `preview`, `rendererData`, `selectedDate`, `rendering` y emita `render-ready`, `render-error`, `request-render` según disponibilidad, manteniendo UI limpia/minimalista con Materialize.
 
@@ -172,3 +175,10 @@ Cada componente responde a una sola pregunta:
 - **Renderer** → ¿qué puedo construir con estos datos?
 - **Actions** → ¿qué quiere hacer el usuario?
 - **Module** → ¿cómo coordino los tres sin acoplar persistencia?
+
+
+## 10) Regla de cierre por prompt
+Cada prompt principal debe incluir un subprompt de cierre para:
+1. verificar checklist funcional,
+2. actualizar `docs/progreso.md`,
+3. marcar estado como `Cerrada` o dejar bloqueo documentado.

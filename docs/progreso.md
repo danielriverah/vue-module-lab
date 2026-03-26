@@ -61,3 +61,7 @@
 1. `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringViewer.vue`
 2. `resources/assets/js/modules/producciones/monitoring/ProductionMonitoringModule.vue`
 3. `docs/progreso.md`
+
+
+### Subprompt de cierre/completado
+> Finaliza la Tarea 1 (Viewer): corrige detalles detectados, valida checklist (`loading`, `error`, `sin detalle`, `con preview png/svg`), integra en `ProductionMonitoringModule.vue` si aplica y actualiza `docs/progreso.md` cambiando Viewer a `Cerrada` con avance `100%` o dejando bloqueo explícito.
