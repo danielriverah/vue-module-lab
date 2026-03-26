@@ -146,6 +146,9 @@ Cada tarea debe ejecutarse como:
 #### Subprompt 1.1 — Cierre de Viewer
 > Finaliza Viewer: valida checklist (`loading`, `error`, `sin detalle`, `preview png/svg`), corrige pendientes, integra en `ProductionMonitoringModule.vue` si aplica y actualiza `docs/progreso.md` marcando la tarea como `Cerrada` (100%) o con bloqueo explícito.
 
+#### Subprompt 1.2 — Marcado de completado
+> Si no hay cambios funcionales adicionales en Viewer, registra explícitamente “etapa de creación de Viewer completada” en `docs/progreso.md` y conserva un próximo paso concreto.
+
 ### Prompt 2 — Renderer
 > Crea `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringRenderer.vue` que reciba `detail`, `preview`, `rendererData`, `selectedDate`, `rendering` y emita `render-ready`, `render-error`, `request-render` según disponibilidad, manteniendo UI limpia/minimalista con Materialize.
 

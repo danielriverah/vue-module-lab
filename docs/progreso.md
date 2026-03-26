@@ -46,6 +46,7 @@
 - Se agregó regla UI global para Materialize + estilo limpio/moderno/minimalista.
 - Se creó `ProductionMonitoringViewer.vue` en la ruta oficial con props, estados (`loading/error/vacío`) y visualización de previews sin lógica de persistencia.
 - Se cerró la Tarea 1 (Viewer) al 100%: checklist validado (`loading`, `error`, `sin detalle`, `preview png/svg`) e integración parcial en `ProductionMonitoringModule.vue`.
+- Etapa de creación de Viewer finalizada y marcada como completada sin bloqueos.
 - Se cerró la Tarea 2 (Renderer) al 100%: casos A/B/C validados (PNG existente, render temporal, request-render) e integración del renderer en `ProductionMonitoringModule.vue`.
 - Se inició la Tarea 3 (Actions): componente creado con reglas de habilitación por estado y emits; integrado en `ProductionMonitoringModule.vue`.
 - Se cerró la Tarea 3 (Actions) al 100%: validación de habilitación/deshabilitación y verificación de emisiones (`update`, `change-date`, `render`, `save-svg`, `save-png`, `save-all`).
@@ -57,6 +58,9 @@
 
 ## Prompt próximo sugerido (con contexto fijo)
 > Módulo Monitoring base completado y con pruebas unitarias iniciales. Próximo paso recomendado: ampliar cobertura y conectar `npm run test:unit` en CI.
+
+### Subprompt de cierre del trabajo actual
+> Si el trabajo actual fue sobre Viewer, registrar cierre en `docs/progreso.md` como `Cerrada (100%)`; si hubo ajustes pendientes, dejarlos como bloqueo explícito con siguiente acción.
 
 ### Archivos base que debes leer antes de ejecutar el prompt
 1. `docs/modulos/producciones/Monitoring/AGENTS_README.md`
@@ -73,4 +77,4 @@
 
 
 ### Subprompt de cierre/completado
-> Cierre completado: Tarea 4 en `Cerrada (100%)` sin bloqueos activos.
+> Cierre completado: Tarea 4 en `Cerrada (100%)` sin bloqueos activos. Para tareas puntuales (ej. Viewer), marcar `Cerrada (100%)` o documentar bloqueo.
