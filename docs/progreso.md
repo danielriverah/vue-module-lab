@@ -13,8 +13,8 @@
 - Última actualización: `2026-03-26`
 
 ## Estado general
-- Estado: `En planeación`
-- Avance total estimado: `0%`
+- Estado: `En progreso`
+- Avance total estimado: `25%`
 - Bloqueo actual: `Ninguno`
 
 ---
@@ -23,7 +23,7 @@
 
 | Tarea | Estado | Avance | Último movimiento | Próximo paso |
 |---|---|---:|---|---|
-| 1. Viewer | En revisión | 70% | Componente base creado | Revisar props/estados y validar integración |
+| 1. Viewer | Cerrada | 100% | Checklist validado e integración parcial en Module | Iniciar Renderer |
 | 2. Renderer | Pendiente | 0% | Definida ruta y eventos | Crear render temporal |
 | 3. Actions | Pendiente | 0% | Definidas acciones | Crear botonera y emits |
 | 4. Integración | Pendiente | 0% | Definido contenedor | Integrar subcomponentes |
@@ -45,11 +45,12 @@
 - Se confirmó que el progreso se llevará aquí para trabajar un módulo a la vez.
 - Se agregó regla UI global para Materialize + estilo limpio/moderno/minimalista.
 - Se creó `ProductionMonitoringViewer.vue` en la ruta oficial con props, estados (`loading/error/vacío`) y visualización de previews sin lógica de persistencia.
+- Se cerró la Tarea 1 (Viewer) al 100%: checklist validado (`loading`, `error`, `sin detalle`, `preview png/svg`) e integración parcial en `ProductionMonitoringModule.vue`.
 
 ---
 
 ## Prompt próximo sugerido (con contexto fijo)
-> Revisa e integra `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringViewer.vue` dentro del contenedor del módulo y valida casos `loading/error/sin detalle/con preview` con datos mock.
+> Inicia la Tarea 2 creando `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringRenderer.vue` para render temporal con eventos `render-ready`, `render-error` y `request-render`, aplicando `docs/ui_reglasgenerales.md`.
 
 ### Archivos base que debes leer antes de ejecutar el prompt
 1. `docs/modulos/producciones/Monitoring/AGENTS_README.md`
@@ -58,10 +59,10 @@
 4. `AGENTS.md`
 
 ### Archivos que debes actualizar durante el prompt
-1. `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringViewer.vue`
+1. `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringRenderer.vue`
 2. `resources/assets/js/modules/producciones/monitoring/ProductionMonitoringModule.vue`
 3. `docs/progreso.md`
 
 
 ### Subprompt de cierre/completado
-> Finaliza la Tarea 1 (Viewer): corrige detalles detectados, valida checklist (`loading`, `error`, `sin detalle`, `con preview png/svg`), integra en `ProductionMonitoringModule.vue` si aplica y actualiza `docs/progreso.md` cambiando Viewer a `Cerrada` con avance `100%` o dejando bloqueo explícito.
+> Finaliza la Tarea 2 (Renderer): valida casos A/B/C (con PNG / render temporal / request-render), corrige pendientes de payload y actualiza `docs/progreso.md` dejando estado `Cerrada` (100%) o bloqueo explícito.

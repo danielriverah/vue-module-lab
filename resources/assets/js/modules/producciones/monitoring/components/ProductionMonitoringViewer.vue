@@ -147,13 +147,13 @@ export default {
       return !!this.detail && Object.keys(this.detail).length > 0;
     },
     hasJsonPreview() {
-      return !!this.preview?.json?.exists;
+      return !!(this.preview && this.preview.json && this.preview.json.exists);
     },
     hasSvgPreview() {
-      return !!this.preview?.svg?.exists;
+      return !!(this.preview && this.preview.svg && this.preview.svg.exists);
     },
     hasPngPreview() {
-      return !!this.preview?.png?.exists;
+      return !!(this.preview && this.preview.png && this.preview.png.exists);
     },
     hasError() {
       return !!this.error;
