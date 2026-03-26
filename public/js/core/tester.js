@@ -1,0 +1,1 @@
+console.log('calrgo archivo core')

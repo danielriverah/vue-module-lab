@@ -1,0 +1,45 @@
+{
+	"private": true,
+	"name": "vue-module-lab",
+	"version": "1.0.1",
+	"description": "",
+	"main": "webpack.mix.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "set NODE_OPTIONS=--openssl-legacy-provider && npm run development",
+		"development": "cross-env NODE_ENV=development webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+		"watch": "cross-env NODE_ENV=development webpack --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+		"watch-poll": "npm run watch -- --watch-poll",
+		"hot": "set NODE_OPTIONS=--openssl-legacy-provider && cross-env NODE_ENV=development webpack-dev-server --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+		"prod": "mix --production"
+	},
+	"keywords": [],
+	"author": "RiveraDevs",
+	"license": "ISC",
+	"type": "commonjs",
+	"devDependencies": {
+		"axios": "^0.21.1",
+		"browser-sync": "^2.29.3",
+		"browser-sync-webpack-plugin": "^2.3.0",
+		"cross-env": "^5.2.1",
+		"css-loader": "3.6.0",
+		"ember-cli-materialize": "^0.22.0",
+		"laravel-mix": "4.1.4",
+		"resolve-url-loader": "3.1.0",
+		"sass": "1.32.13",
+		"sass-loader": "7.3.1",
+		"vue-template-compiler": "2.6.14",
+		"webpack": "4.46.0",
+		"webpack-cli": "3.3.12",
+		"webpack-dev-server": "3.11.2"
+	},
+	"dependencies": {
+		"datatables.net": "^2.3.7",
+		"datatables.net-dt": "^2.3.7",
+		"datatables.net-responsive-dt": "^3.0.8",
+		"vue": "2.6.14",
+		"vue-loader": "^15.10.2",
+		"vue-select": "^3.20.4",
+		"vue2-google-maps": "^0.10.7"
+	}
+}

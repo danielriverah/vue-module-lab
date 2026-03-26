@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mega Fresh Produce - </title>
+	<link rel="icon" type="image/x-icon" href="./favicon.ico">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<!-- //cdn.datatables.net/2.3.7/css/dataTables.dataTables.min.css -->
+	<link rel="stylesheet" href="https://cdn.datatables.net/2.3.7/css/dataTables.dataTables.css" />
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+	<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.jqueryui.css">
+	<link href="css\libs\google_icon_simb\material_simbols_outline.css" rel="stylesheet">
+	<link href="css\libs\google_icon_simb\material_icons.css" rel="stylesheet">
+	<link href="css\_app.css" rel="stylesheet">
+	<style>
+
+		#plantacion-index{
+			height: 100%;
+			overflow: auto;
+		}
+		main{
+			padding: 0;
+		}
+		.container-main{
+			overflow: auto;
+			height: 100%;
+			max-height: 100%;
+			position: absolute;
+		}
+	</style>
+</head>
+	<body class="loaded">
+		<main>
+			<div class="container-main">
+				<div class="card">
+					<div class="card-content">
+						<!-- <div id="plantacion-index">
+							<actividades-tractor v-bind="datosVista"></actividades-tractor>
+						</div> -->
+						<!-- <div class="app-content" id="plantacion-index">
+							<plantaciones-index @action-emited="accionFromComponente"></plantaciones-index>
+						</div> -->
+						<div id="lote_asign_zona">
+							<asign-map-zona :lote="lote"
+								@actualiza-zona-produccion="MandaOrdenActualizar"
+							></asign-map-zona>
+							
+							<!-- <AsignMapZona :lote="lote"></AsignMapZona> -->
+						</div>
+						<button onClick="actionClick()">Tests Articulo lote</button>
+					</div>
+				</div>
+				<!-- <div class="col s12">
+					<a href="#" onclick="testBtnModuloCargado()" class="btn">Accion desde html</a>
+				</div> -->
+			</div>
+		</main>
+		<script>
+			function MandaOrdenActualizar(params){
+				console.log('action save ppolygon',params)
+			}
+			function actionClick(){
+				const l={
+					"produccion_id": 5000,
+					"folio": "DRH2603-05",
+					"articulo": "Sin Asignar",
+					"fecha": "2026-03-11",
+					"estatus": "N",
+					"aplicado": "NO",
+					"cantidad": "1.800000",
+					"centro_costo": "DRH",
+					"rancho": "DRH",
+					"usuario_creacion": "drh_river@hotmail.com",
+					"currentyear": "26",
+					"area_asig": "1.800000",
+					"poligono_asig": "22.219068457298395,-101.89955795337295|22.219029977691513,-101.89867284156915|22.21733653303677,-101.89847435810205|22.217351431466135,-101.89943995334741",
+					"area_zona": "1.800000",
+					"poligono_zona": "22.219068457298395,-101.89955795337295|22.219029977691513,-101.89867284156915|22.21733653303677,-101.89847435810205|22.217351431466135,-101.89943995334741",
+					"fecha_plantacion": null,
+					"fecha_cierre_prevista": null,
+					"fecha_cierre": null,
+					"year": 2026,
+					"semana": 11,
+					"variedades": "N/A",
+					"tienePlan": 1
+				}
+				if(window.LoteAsignZonaAppVue){
+					LoteAsignZonaAppVue.$children[0].ActualizaLote(l)
+				}
+			}
+		</script>
+		<script>
+			window.appConfig = {
+				mapKey: 'AIzaSyBUVWL70vwp5s3tpqA48M-SzY3yFJuRguQ',//"{{ env('GOOGLE_MAP_KEY') }}",
+				mapLibreries: 'geometry,places,drawing,visualization ',//"{{ env('GOOGLE_MAP_LIBRERIES') }}",
+			}
+			</script>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js" ></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+		<script src="https://cdn.datatables.net/2.3.7/js/dataTables.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
+		<!-- <script src="/js/app.js"></script> -->
+		<script src="js/modules/activities/assets/activitiesApp.js"></script>
+		<!-- <script src="/js/core/tester.js"></script> -->
+		<script src="/js/modules/lotes/updateLoteZona.js"></script>
+
+		<script>
+			window.addEventListener('tabla-recargada', function(){
+				console.log("Evento recibido en HTML base");
+			});
+		</script>
+		<script>
+			function testBtnModuloCargado(){
+				console.log(window.AppVue)
+				window.AppVue.$children[0].recargarDatos();
+			}
+			function accionFromComponenteJS(parametros){
+				console.log('acciones desde modulo',parametros)
+			}
+			
+		</script>
+
+	</body>
+</html>
