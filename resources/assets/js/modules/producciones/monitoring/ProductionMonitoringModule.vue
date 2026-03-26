@@ -21,22 +21,41 @@
       @render-error="onRenderError"
     />
 
-    <div class="card-panel amber lighten-5 amber-text text-darken-4 pm-next-panel">
-      <strong>Integración parcial:</strong>
-      Actions se integrará en la siguiente tarea.
-    </div>
+    <ProductionMonitoringActions
+      :has-detail="hasDetail"
+      :has-json-preview="hasJsonPreview"
+      :has-svg-preview="hasSvgPreview"
+      :has-png-preview="hasPngPreview"
+      :can-render="canRender"
+      :can-save-svg="canSaveSvg"
+      :can-save-png="canSavePng"
+      :loading="loading"
+      :updating="updating"
+      :rendering="rendering"
+      :saving-svg="savingSvg"
+      :saving-png="savingPng"
+      :selected-date="selectedDate"
+      @update="onUpdate"
+      @change-date="onChangeDate"
+      @render="onRenderAction"
+      @save-svg="onSaveSvg"
+      @save-png="onSavePng"
+      @save-all="onSaveAll"
+    />
   </section>
 </template>
 
 <script>
 import ProductionMonitoringViewer from './components/ProductionMonitoringViewer.vue';
 import ProductionMonitoringRenderer from './components/ProductionMonitoringRenderer.vue';
+import ProductionMonitoringActions from './components/ProductionMonitoringActions.vue';
 
 export default {
   name: 'ProductionMonitoringModule',
   components: {
     ProductionMonitoringViewer,
-    ProductionMonitoringRenderer
+    ProductionMonitoringRenderer,
+    ProductionMonitoringActions
   },
   props: {
     production: {
@@ -92,6 +111,30 @@ export default {
         svg: Object.assign({ exists: false, url: null, key: null }, incoming.svg || {}),
         png: Object.assign({ exists: false, url: null, key: null }, incoming.png || {})
       };
+    },
+    hasDetail() {
+      return !!this.detail && Object.keys(this.detail).length > 0;
+    },
+    hasJsonPreview() {
+      return !!(this.normalizedPreview.json && this.normalizedPreview.json.exists);
+    },
+    hasSvgPreview() {
+      return !!(this.normalizedPreview.svg && this.normalizedPreview.svg.exists);
+    },
+    hasPngPreview() {
+      return !!(this.normalizedPreview.png && this.normalizedPreview.png.exists);
+    },
+    canRender() {
+      return this.hasDetail && !this.rendering;
+    },
+    canSaveSvg() {
+      return !!(this.rendererData && this.rendererData.svgContent) && !this.savingSvg;
+    },
+    canSavePng() {
+      const hasRenderAsset = !!(
+        this.rendererData && (this.rendererData.svgContent || this.rendererData.imageUrl)
+      );
+      return hasRenderAsset && !this.savingPng;
     }
   },
   methods: {
@@ -104,6 +147,41 @@ export default {
     },
     onRenderError(payload) {
       this.$emit('render-error', payload);
+    },
+    onUpdate() {
+      this.$emit('update');
+    },
+    onChangeDate(value) {
+      this.$emit('change-date', value);
+    },
+    onRenderAction() {
+      this.$emit('render', {
+        production: this.production,
+        detail: this.detail,
+        selectedDate: this.selectedDate,
+        source: 'actions'
+      });
+    },
+    onSaveSvg() {
+      this.$emit('save-svg', {
+        selectedDate: this.selectedDate,
+        rendererData: this.rendererData,
+        detail: this.detail
+      });
+    },
+    onSavePng() {
+      this.$emit('save-png', {
+        selectedDate: this.selectedDate,
+        rendererData: this.rendererData,
+        detail: this.detail
+      });
+    },
+    onSaveAll() {
+      this.$emit('save-all', {
+        selectedDate: this.selectedDate,
+        rendererData: this.rendererData,
+        detail: this.detail
+      });
     }
   }
 };
@@ -114,10 +192,5 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-
-.pm-next-panel {
-  margin: 0;
-  border-radius: 10px;
 }
 </style>
