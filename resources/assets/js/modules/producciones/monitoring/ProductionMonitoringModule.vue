@@ -6,14 +6,14 @@
       :preview="normalizedPreview"
       :selected-date="selectedDate"
       :loading="loading"
-      :error="error"
+      :error="moduleError"
     />
 
     <ProductionMonitoringRenderer
       :production="production"
       :detail="detail"
       :preview="normalizedPreview"
-      :renderer-data="rendererData"
+      :renderer-data="effectiveRenderData"
       :selected-date="selectedDate"
       :rendering="rendering"
       @request-render="onRequestRender"
@@ -103,6 +103,12 @@ export default {
       default: null
     }
   },
+  data() {
+    return {
+      localRenderResult: null,
+      localRenderError: null
+    };
+  },
   computed: {
     normalizedPreview() {
       const incoming = this.preview || {};
@@ -111,6 +117,12 @@ export default {
         svg: Object.assign({ exists: false, url: null, key: null }, incoming.svg || {}),
         png: Object.assign({ exists: false, url: null, key: null }, incoming.png || {})
       };
+    },
+    effectiveRenderData() {
+      return this.rendererData || this.localRenderResult || null;
+    },
+    moduleError() {
+      return this.error || this.localRenderError;
     },
     hasDetail() {
       return !!this.detail && Object.keys(this.detail).length > 0;
@@ -128,24 +140,50 @@ export default {
       return this.hasDetail && !this.rendering;
     },
     canSaveSvg() {
-      return !!(this.rendererData && this.rendererData.svgContent) && !this.savingSvg;
+      return !!(this.effectiveRenderData && this.effectiveRenderData.svgContent) && !this.savingSvg;
     },
     canSavePng() {
       const hasRenderAsset = !!(
-        this.rendererData && (this.rendererData.svgContent || this.rendererData.imageUrl)
+        this.effectiveRenderData &&
+        (this.effectiveRenderData.svgContent || this.effectiveRenderData.imageUrl || this.effectiveRenderData.pngSource)
       );
       return hasRenderAsset && !this.savingPng;
     }
   },
+  watch: {
+    rendererData: {
+      immediate: true,
+      deep: true,
+      handler(val) {
+        if (val) {
+          this.localRenderResult = null;
+        }
+      }
+    },
+    selectedDate() {
+      this.localRenderError = null;
+    }
+  },
   methods: {
+    basePayload() {
+      return {
+        production: this.production,
+        detail: this.detail,
+        selectedDate: this.selectedDate,
+        rendererData: this.effectiveRenderData
+      };
+    },
     onRequestRender(payload) {
       this.$emit('request-render', payload);
       this.$emit('render', payload);
     },
     onRenderReady(payload) {
+      this.localRenderResult = payload;
+      this.localRenderError = null;
       this.$emit('render-ready', payload);
     },
     onRenderError(payload) {
+      this.localRenderError = payload;
       this.$emit('render-error', payload);
     },
     onUpdate() {
@@ -155,33 +193,17 @@ export default {
       this.$emit('change-date', value);
     },
     onRenderAction() {
-      this.$emit('render', {
-        production: this.production,
-        detail: this.detail,
-        selectedDate: this.selectedDate,
-        source: 'actions'
-      });
+      this.$emit('render', Object.assign({ source: 'actions' }, this.basePayload()));
     },
     onSaveSvg() {
-      this.$emit('save-svg', {
-        selectedDate: this.selectedDate,
-        rendererData: this.rendererData,
-        detail: this.detail
-      });
+      this.$emit('save-svg', this.basePayload());
     },
     onSavePng() {
-      this.$emit('save-png', {
-        selectedDate: this.selectedDate,
-        rendererData: this.rendererData,
-        detail: this.detail
-      });
+      this.$emit('save-png', this.basePayload());
     },
     onSaveAll() {
-      this.$emit('save-all', {
-        selectedDate: this.selectedDate,
-        rendererData: this.rendererData,
-        detail: this.detail
-      });
+      const payload = Object.assign({ source: 'actions-save-all' }, this.basePayload());
+      this.$emit('save-all', payload);
     }
   }
 };

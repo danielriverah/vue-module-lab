@@ -86,7 +86,8 @@ export default {
         imageUrl: null,
         metadata: null
       },
-      renderError: null
+      renderError: null,
+      lastRequestSignature: null
     };
   },
   computed: {
@@ -143,11 +144,13 @@ export default {
       }
 
       if (this.hasPngPreview) {
+        this.lastRequestSignature = null;
         this.renderOutput = { svgContent: null, imageUrl: null, metadata: { source: 'png-preview' } };
         return;
       }
 
       if (this.hasRenderableData) {
+        this.lastRequestSignature = null;
         this.prepareRenderOutput();
         return;
       }
@@ -193,6 +196,18 @@ export default {
       }
     },
     emitRequestRender() {
+      const signature = [
+        this.selectedDate || '',
+        this.detail && this.detail.id ? this.detail.id : '',
+        this.detail && this.detail.clave ? this.detail.clave : ''
+      ].join('|');
+
+      if (this.lastRequestSignature === signature) {
+        return;
+      }
+
+      this.lastRequestSignature = signature;
+
       this.$emit('request-render', {
         production: this.production,
         detail: this.detail,
