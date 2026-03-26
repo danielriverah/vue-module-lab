@@ -1,569 +1,184 @@
 # AGENTS README
-## Componente Vue: `ProductionMonitoringViewer`
 ## Módulo Vue: Monitoring Scene UI
-### División: `Viewer` + `Renderer` + `Actions`
-
-### Objetivo
-
-Crear un componente Vue reutilizable para visualizar el monitoreo de una producción agrícola a partir de:
-
-- datos generales de `production_monitoring`
-- detalle de escena de `production_monitoring_detalle`
-- archivos de vista previa existentes en S3 (`json`, `svg`, `png`)
-- posibilidad de generar la vista cuando no exista imagen para una fecha dada
-- emitir acciones al componente padre para actualizar, guardar SVG y guardar PNG
-
-El componente **no debe ser dueño de la lógica de persistencia**.  
-Debe comportarse como un visor/controlador de UI que:
-
-- **recibe datos**
-- **muestra estado**
-- **detecta faltantes**
-- **solicita acciones al padre**
-- **reacciona a nuevos datos recibidos**
+### División: `Viewer` + `Renderer` + `Actions` + `Module`
 
 ---
 
-# 1. Responsabilidad del componente
+## 0) Regla crítica para evitar confusiones de creación
 
-El componente `ProductionMonitoringViewer` debe:
+Toda **creación de archivos del módulo Monitoring** debe hacerse dentro de:
 
-1. Mostrar información general de la producción.
-2. Mostrar información del detalle satelital de la fecha seleccionada.
-3. Mostrar la previsualización existente si ya hay:
-   - `preview_json`
-   - `preview_svg`
-   - `preview_image`
-4. Si la imagen de la fecha actual no existe:
-   - permitir generar la vista
-   - permitir guardar SVG
-   - permitir guardar PNG
-5. Emitir acciones al padre para que este ejecute:
-   - actualización de datos
-   - generación/render
-   - guardado de SVG
-   - guardado de PNG
-6. Actualizarse automáticamente cuando el padre cambie props o pase nuevos datos.
+`resources/assets/js/modules/producciones/monitoring`
 
----
+Estructura objetivo obligatoria:
 
-# 2. Filosofía de diseño
+```txt
+resources/assets/js/modules/producciones/monitoring/
+  ProductionMonitoringModule.vue
+  components/
+    ProductionMonitoringViewer.vue
+    ProductionMonitoringRenderer.vue
+    ProductionMonitoringActions.vue
+  composables/            # opcional
+  utils/                  # opcional
+  __tests__/              # opcional
+```
 
-Este componente debe ser **presentacional + interactivo**, pero no acoplarse a servicios HTTP ni SDK de AWS directamente.
-
-## El padre debe encargarse de:
-
-- consultar backend
-- consultar DynamoDB
-- consultar existencia real en S3
-- generar JSON/SVG/PNG
-- persistir cambios
-- volver a pasar al componente los datos actualizados
-
-## El hijo debe encargarse de:
-
-- renderizar la UI
-- decidir qué botones mostrar
-- emitir eventos
-- reaccionar a cambios de props
-- mostrar loading, errores y estados vacíos
+### Reglas anti-error de creación
+1. No crear estos componentes en otras rutas (`components/modulos/...`, `mock/`, etc.).
+2. No duplicar nombres en carpetas paralelas.
+3. Si ya existe un archivo con el mismo nombre fuera de la ruta oficial, **no reutilizarlo sin migración explícita**.
+4. Toda tarea debe declarar ruta exacta de archivo antes de crear código.
 
 ---
 
-# 3. Entidades de entrada esperadas
+## 1) Objetivo
 
-## 3.1 `production`
-Representa el registro principal de monitoreo.
-
-Ejemplo esperado:
-
-```json
-{
-  "produccion_id": 1987,
-  "folio": "TL2601-04",
-  "dias_max_monitoreo": 95,
-  "estatus": "OPEN",
-  "fecha_siembra": "2026-01-27",
-  "ultima_fecha_consultada": "2026-03-19",
-  "pbox": {
-    "min_lat": 21.122813888889,
-    "min_lon": -100.89053055556,
-    "max_lat": 21.126355555556,
-    "max_lon": -100.88798333333,
-    "pbox": [-100.89053055556, 21.122813888889, -100.88798333333, 21.126355555556],
-    "puntos_bbox": [
-      [21.122813888889, -100.89053055556],
-      [21.122813888889, -100.88798333333],
-      [21.126355555556, -100.88798333333],
-      [21.126355555556, -100.89053055556]
-    ]
-  }
-}
-# Enfoque mas detallado
-# AGENTS README
-## Módulo Vue: Monitoring Scene UI
-### División: `Viewer` + `Renderer` + `Actions`
-
----
-
-# 1. Objetivo
-
-Construir un módulo Vue para monitoreo de producción agrícola usando datos de:
+Construir un módulo Vue reutilizable para monitoreo de producción agrícola usando:
 
 - `production_monitoring`
 - `production_monitoring_detalle`
-- previews existentes en S3
+- previews en S3 (`json`, `svg`, `png`)
 - datos renderizables para generar nuevas vistas
 
-El módulo debe dividirse en tres piezas especializadas:
-
-- **Viewer** → visualiza datos y previews
-- **Renderer** → genera o prepara la visualización
-- **Actions** → expone botones y emite eventos
-
-El padre orquesta la carga, persistencia, consulta en backend, consulta en S3 y actualización de props.
+El padre orquesta backend/S3/persistencia. El módulo solo UI + coordinación de eventos.
 
 ---
 
-# 2. Arquitectura propuesta
+## 2) Guía UI obligatoria
 
-## 2.1 Componente contenedor
-### `ProductionMonitoringModule.vue`
-
-Este componente une a los 3 subcomponentes:
-
-- `ProductionMonitoringViewer.vue`
-- `ProductionMonitoringRenderer.vue`
-- `ProductionMonitoringActions.vue`
-
-Su función es:
-
-- recibir props globales
-- repartir datos a cada subcomponente
-- escuchar eventos de hijos
-- reenviar eventos al padre o coordinarlos localmente
+Para cualquier componente de Monitoring se debe respetar:
+- `docs/ui_reglasgenerales.md`
+- uso de **Materialize CSS**
+- estructura limpia, moderna y minimalista
 
 ---
 
-# 3. Responsabilidad de cada componente
+## 3) Arquitectura propuesta
+
+### 3.1 Contenedor
+- `ProductionMonitoringModule.vue`
+
+### 3.2 Subcomponentes
+- `ProductionMonitoringViewer.vue` → visualiza estado actual
+- `ProductionMonitoringRenderer.vue` → construye vista temporal
+- `ProductionMonitoringActions.vue` → emite intención del usuario
 
 ---
 
-# 3.1 `ProductionMonitoringViewer.vue`
+## 4) Responsabilidad por componente
 
-## Responsabilidad
-Mostrar datos ya existentes.
+### 4.1 Viewer
+**Sí:** mostrar metadata, detalle, previews y estados (`loading/error/vacío`).
 
-## Debe mostrar
-- información general de producción
-- información del detalle de escena
-- preview PNG si existe
-- preview SVG si existe
-- estado de disponibilidad de JSON/SVG/PNG
-- mensajes vacíos o errores visuales
+**No:** HTTP, AWS, persistencia, render complejo.
 
-## No debe hacer
-- render de imagen nueva
-- guardado en S3
-- llamadas HTTP
-- lógica AWS
+### 4.2 Renderer
+**Sí:** tomar `detail + rendererData`, preparar salida temporal y emitir:
+- `render-ready`
+- `render-error`
+- `request-render`
 
-## Props sugeridas
+**No:** guardar en S3, persistir en DB, consultar backend.
 
-```js
-props: {
-  production: { type: Object, required: true },
-  detail: { type: Object, default: null },
-  preview: {
-    type: Object,
-    default: () => ({
-      json: { exists: false, url: null, key: null },
-      svg: { exists: false, url: null, key: null },
-      png: { exists: false, url: null, key: null }
-    })
-  },
-  selectedDate: { type: String, default: null },
-  loading: { type: Boolean, default: false },
-  error: { type: [String, Object, null], default: null }
-}
-Computed sugeridos
-computed: {
-  hasDetail() {
-    return !!this.detail;
-  },
-  hasJsonPreview() {
-    return !!this.preview?.json?.exists;
-  },
-  hasSvgPreview() {
-    return !!this.preview?.svg?.exists;
-  },
-  hasPngPreview() {
-    return !!this.preview?.png?.exists;
-  }
-}
-Estados que debe manejar
-sin detalle
-cargando
-error
-detalle con preview
-detalle sin preview
-Salida esperada
+### 4.3 Actions
+**Sí:** botones y eventos:
+- `update`
+- `change-date`
+- `render`
+- `save-svg`
+- `save-png`
+- `save-all`
 
-Visualización pura.
+**No:** lógica visual compleja, render interno, persistencia.
 
-3.2 ProductionMonitoringRenderer.vue
-Responsabilidad
+### 4.4 Module (contenedor)
+**Sí:** coordinar Viewer + Renderer + Actions, calcular estados derivados y reemitir eventos al padre.
 
-Tomar los datos necesarios para construir una vista previa renderizable.
+---
 
-Debe encargarse de
-recibir detail
-recibir rendererData o preview.json
-montar una previsualización interna
-preparar SVG o contenido gráfico temporal
-notificar si puede guardarse
-reaccionar cuando cambie fecha, detalle o datos renderizables
-No debe hacer
-guardar directamente en S3
-persistir en DynamoDB
-consultar backend
-Props sugeridas
-props: {
-  production: { type: Object, required: true },
-  detail: { type: Object, default: null },
-  preview: { type: Object, default: () => ({}) },
-  rendererData: { type: Object, default: null },
-  selectedDate: { type: String, default: null },
-  rendering: { type: Boolean, default: false }
-}
-Eventos que puede emitir
-emit('render-ready', {
-  svgContent,
-  pngSource,
-  metadata
-})
+## 5) Contrato de datos mínimo
 
-emit('render-error', error)
+### `production`
+- `produccion_id`, `folio`, `estatus`, `fecha_siembra`, `ultima_fecha_consultada`, `dias_max_monitoreo`, `pbox`
 
-emit('request-render', {
-  production,
-  detail,
-  selectedDate
-})
-Función clave
+### `detail`
+- `id`, `clave`, `folio`, `fecha`, `cloud_cover`, `bbox`, `polygon`, `collection`, `scene_created`, `procesado`, `renderizado`, `bandas`
 
-Este componente sirve para cubrir el caso:
-
-“Estoy viendo la fecha de hoy, no existe imagen, pero sí tengo datos para crearla”.
-
-Entonces:
-
-si no hay preview persistido
-pero sí existe información para renderizar
-el renderer puede construir una vista temporal y avisar al sistema que ya está lista para guardar
-Casos de uso
-Caso A: existe PNG
-puede no renderizar nada
-o mostrar el PNG directamente
-Caso B: no existe PNG pero existe JSON/renderData
-genera SVG temporal
-genera preview local
-habilita acciones de guardado
-Caso C: no existe nada
-emite request-render
-3.3 ProductionMonitoringActions.vue
-Responsabilidad
-
-Centralizar todas las acciones del usuario.
-
-Debe mostrar botones como:
-Actualizar
-Cambiar fecha
-Generar vista
-Guardar SVG
-Guardar PNG
-Guardar todo
-Reintentar
-No debe hacer
-lógica de visualización
-render de imagen
-persistencia
-Props sugeridas
-props: {
-  hasDetail: { type: Boolean, default: false },
-  hasJsonPreview: { type: Boolean, default: false },
-  hasSvgPreview: { type: Boolean, default: false },
-  hasPngPreview: { type: Boolean, default: false },
-  canRender: { type: Boolean, default: false },
-  canSaveSvg: { type: Boolean, default: false },
-  canSavePng: { type: Boolean, default: false },
-  loading: { type: Boolean, default: false },
-  updating: { type: Boolean, default: false },
-  rendering: { type: Boolean, default: false },
-  savingSvg: { type: Boolean, default: false },
-  savingPng: { type: Boolean, default: false },
-  selectedDate: { type: String, default: null }
-}
-Eventos que debe emitir
-emit('update')
-emit('change-date', date)
-emit('render')
-emit('save-svg')
-emit('save-png')
-emit('save-all')
-Reglas de habilitación
-Botón actualizar
-
-Siempre disponible salvo loading/updating
-
-Botón generar vista
-
-Disponible si:
-
-hay detail
-no hay PNG
-no está renderizando
-Botón guardar SVG
-
-Disponible si:
-
-existe salida del renderer o SVG temporal
-no está guardando
-Botón guardar PNG
-
-Disponible si:
-
-existe salida renderizada o SVG/base visual
-no está guardando
-4. Componente contenedor
-ProductionMonitoringModule.vue
-
-Este componente debe ser el pegamento entre todos.
-
-Props sugeridas
-props: {
-  production: { type: Object, required: true },
-  detail: { type: Object, default: null },
-  preview: { type: Object, default: () => ({}) },
-  rendererData: { type: Object, default: null },
-  selectedDate: { type: String, default: null },
-  loading: { type: Boolean, default: false },
-  updating: { type: Boolean, default: false },
-  rendering: { type: Boolean, default: false },
-  savingSvg: { type: Boolean, default: false },
-  savingPng: { type: Boolean, default: false },
-  error: { type: [String, Object, null], default: null }
-}
-Eventos que reemite al padre
-emit('update')
-emit('change-date', date)
-emit('render', payload)
-emit('save-svg', payload)
-emit('save-png', payload)
-emit('save-all', payload)
-Responsabilidades
-calcular estados derivados globales
-pasar datos a Viewer
-pasar datos a Renderer
-pasar flags a Actions
-escuchar render-ready
-exponer save-svg y save-png con payload completo
-5. Flujo de interacción
-5.1 Flujo: solo visualizar
-Padre carga production, detail, preview
-Viewer muestra metadata e imagen
-Actions solo habilita actualizar o cambiar fecha
-5.2 Flujo: no existe imagen
-Padre pasa detail, pero preview.png.exists = false
-Viewer muestra “sin preview”
-Actions habilita “Generar vista”
-Usuario pulsa “Generar vista”
-Actions emite render
-Padre genera datos o responde con rendererData
-Renderer crea preview temporal
-Renderer emite render-ready
-Actions habilita guardar SVG/PNG
-5.3 Flujo: guardar
-Usuario pulsa “Guardar SVG”
-Actions emite save-svg
-Padre guarda en S3
-Padre actualiza preview
-Viewer refleja el nuevo estado
-
-Igual para PNG.
-
-6. Contrato de datos
-6.1 production
-
-Datos globales de monitoreo.
-
-Campos esperados:
-
-produccion_id
-folio
-estatus
-fecha_siembra
-ultima_fecha_consultada
-dias_max_monitoreo
-pbox
-6.2 detail
-
-Datos de escena puntual.
-
-Campos esperados:
-
-id
-clave
-folio
-fecha
-cloud_cover
-bbox
-polygon
-collection
-scene_created
-procesado
-renderizado
-bandas
-6.3 preview
-
-Estado real de archivos existentes.
-
+### `preview`
+```json
 {
-  json: { exists: false, url: null, key: null },
-  svg: { exists: false, url: null, key: null },
-  png: { exists: false, url: null, key: null }
+  "json": { "exists": false, "url": null, "key": null },
+  "svg":  { "exists": false, "url": null, "key": null },
+  "png":  { "exists": false, "url": null, "key": null }
 }
-6.4 rendererData
+```
 
-Datos temporales o definitivos para construir la salida visual.
+### `rendererData`
+Salida/entrada temporal para construir visualización (`svgContent`, `imageUrl`, `geojson`, `dimensions`, `style`).
 
-Ejemplo:
+---
 
-{
-  svgContent: null,
-  imageUrl: null,
-  geojson: null,
-  dimensions: { width: 512, height: 512 },
-  style: {
-    type: 'ndvi',
-    opacity: 0.7,
-    palette: {
-      muy_bajo: '#8b0000',
-      bajo: '#ff6600',
-      medio: '#ffff00',
-      alto: '#66cc00',
-      muy_alto: '#008000'
-    }
-  }
-}
-7. Estados derivados en el contenedor
-computed: {
-  hasDetail() {
-    return !!this.detail;
-  },
-  hasJsonPreview() {
-    return !!this.preview?.json?.exists;
-  },
-  hasSvgPreview() {
-    return !!this.preview?.svg?.exists;
-  },
-  hasPngPreview() {
-    return !!this.preview?.png?.exists;
-  },
-  canRender() {
-    return this.hasDetail && !this.rendering;
-  },
-  canSaveSvg() {
-    return !!this.rendererData?.svgContent && !this.savingSvg;
-  },
-  canSavePng() {
-    return (!!this.rendererData?.svgContent || !!this.rendererData?.imageUrl) && !this.savingPng;
-  }
-}
-8. Watchers recomendados
+## 6) Flujo funcional resumido
 
-El contenedor o el renderer deben reaccionar a:
+1. **Visualizar**: padre envía `production/detail/preview` → Viewer muestra.
+2. **Sin imagen**: Actions habilita “Generar vista” → renderer emite `request-render` o `render-ready`.
+3. **Guardar**: usuario ejecuta `save-svg/save-png` → padre persiste → padre refresca props → Viewer actualiza.
 
-cambio de fecha
-cambio de detalle
-cambio de preview
-cambio de rendererData
+---
 
-Ejemplo conceptual:
+## 7) Ciclo circular por tarea
 
-watch: {
-  detail: {
-    immediate: true,
-    deep: true,
-    handler(val) {
-      this.localDetail = val;
-    }
-  },
-  preview: {
-    immediate: true,
-    deep: true,
-    handler(val) {
-      this.localPreview = val;
-    }
-  },
-  rendererData: {
-    immediate: true,
-    deep: true,
-    handler(val) {
-      this.localRendererData = val;
-    }
-  }
-}
-9. Estructura visual sugerida
-Bloque 1: Viewer
-encabezado de producción
-metadata de escena
-preview visible
-Bloque 2: Renderer
-canvas/svg temporal
-estado de render
-mensajes de disponibilidad
-Bloque 3: Actions
-selector de fecha
-actualizar
-generar
-guardar svg
-guardar png
-10. Reglas de desacoplamiento
-Viewer
+Cada tarea debe ejecutarse como:
 
-Solo lee y muestra.
+1. **Creación** (en la ruta oficial)
+2. **Revisión** (props/emits/estados/reglas de desacoplamiento)
+3. **Testing** (flujo feliz + bordes)
+4. **Nueva creación** (ajustes por hallazgos)
 
-Renderer
+---
 
-Solo transforma datos a vista temporal.
+## 8) Prompts sugeridos (con contexto fijo para no perder continuidad)
 
-Actions
+### Prompt 1 — Viewer
+> Crea `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringViewer.vue` con props `production`, `detail`, `preview`, `selectedDate`, `loading`, `error`; muestra metadata, previews y estados vacíos/error sin lógica HTTP/AWS/persistencia y siguiendo `docs/ui_reglasgenerales.md`.
 
-Solo emite intención del usuario.
+#### Subprompt 1.1 — Cierre de Viewer
+> Finaliza Viewer: valida checklist (`loading`, `error`, `sin detalle`, `preview png/svg`), corrige pendientes, integra en `ProductionMonitoringModule.vue` si aplica y actualiza `docs/progreso.md` marcando la tarea como `Cerrada` (100%) o con bloqueo explícito.
 
-Parent
+### Prompt 2 — Renderer
+> Crea `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringRenderer.vue` que reciba `detail`, `preview`, `rendererData`, `selectedDate`, `rendering` y emita `render-ready`, `render-error`, `request-render` según disponibilidad, manteniendo UI limpia/minimalista con Materialize.
 
-Consulta, guarda, actualiza y sincroniza.
+### Prompt 3 — Actions
+> Crea `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringActions.vue` con botones (actualizar, cambiar fecha, generar vista, guardar svg/png, guardar todo), reglas de habilitación por estado y emits desacoplados, aplicando la guía UI general.
 
-11. Nombres sugeridos
-ProductionMonitoringModule.vue
-ProductionMonitoringViewer.vue
-ProductionMonitoringRenderer.vue
-ProductionMonitoringActions.vue
-12. Resultado esperado
+### Prompt 4 — Integración
+> Crea `resources/assets/js/modules/producciones/monitoring/ProductionMonitoringModule.vue` para integrar Viewer/Renderer/Actions, calcular `hasDetail`, `hasJsonPreview`, `hasSvgPreview`, `hasPngPreview`, `canRender`, `canSaveSvg`, `canSavePng` y reemitir eventos al padre.
 
-El módulo final debe permitir:
+### Archivos base obligatorios para **todos** los prompts
+1. `docs/modulos/producciones/Monitoring/AGENTS_README.md`
+2. `docs/ui_reglasgenerales.md`
+3. `docs/progreso.md`
+4. `AGENTS.md`
 
-visualizar una producción y su escena
-ver previews existentes
-construir preview temporal cuando no exista
-guardar salidas cuando el usuario lo decida
-reaccionar automáticamente a nuevos datos del padre
-13. Regla principal
+### Archivos que cada prompt debe actualizar
+1. `docs/progreso.md` (estado, avance, bitácora, próximo paso)
+2. Archivo(s) objetivo en `resources/assets/js/modules/producciones/monitoring/...`
+3. (Si cambia política global) `docs/ui_reglasgenerales.md` o `AGENTS.md`
 
-Cada componente debe responder a una sola pregunta:
+---
 
-Viewer → ¿qué existe y cómo se ve?
-Renderer → ¿qué puedo construir con estos datos?
-Actions → ¿qué quiere hacer el usuario?
+## 9) Regla final
+
+Cada componente responde a una sola pregunta:
+- **Viewer** → ¿qué existe y cómo se ve?
+- **Renderer** → ¿qué puedo construir con estos datos?
+- **Actions** → ¿qué quiere hacer el usuario?
+- **Module** → ¿cómo coordino los tres sin acoplar persistencia?
+
+
+## 10) Regla de cierre por prompt
+Cada prompt principal debe incluir un subprompt de cierre para:
+1. verificar checklist funcional,
+2. actualizar `docs/progreso.md`,
+3. marcar estado como `Cerrada` o dejar bloqueo documentado.

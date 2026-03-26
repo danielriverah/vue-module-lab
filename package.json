@@ -11,7 +11,8 @@
 		"watch": "cross-env NODE_ENV=development webpack --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
 		"watch-poll": "npm run watch -- --watch-poll",
 		"hot": "set NODE_OPTIONS=--openssl-legacy-provider && cross-env NODE_ENV=development webpack-dev-server --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
-		"prod": "mix --production"
+		"prod": "mix --production",
+		"test:unit": "node tests/monitoring.unit.js"
 	},
 	"keywords": [],
 	"author": "RiveraDevs",
