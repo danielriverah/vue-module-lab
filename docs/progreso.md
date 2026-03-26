@@ -14,7 +14,7 @@
 
 ## Estado general
 - Estado: `En progreso`
-- Avance total estimado: `65%`
+- Avance total estimado: `75%`
 - Bloqueo actual: `Ninguno`
 
 ---
@@ -25,7 +25,7 @@
 |---|---|---:|---|---|
 | 1. Viewer | Cerrada | 100% | Checklist validado e integración parcial en Module | Iniciar Renderer |
 | 2. Renderer | Cerrada | 100% | Casos A/B/C validados y eventos emitidos | Iniciar Actions |
-| 3. Actions | En revisión | 70% | Componente creado e integrado en Module | Validar habilitación y cerrar tarea |
+| 3. Actions | Cerrada | 100% | Habilitación y emisiones validadas | Iniciar Integración final |
 | 4. Integración | Pendiente | 0% | Definido contenedor | Integrar subcomponentes |
 
 ---
@@ -48,11 +48,12 @@
 - Se cerró la Tarea 1 (Viewer) al 100%: checklist validado (`loading`, `error`, `sin detalle`, `preview png/svg`) e integración parcial en `ProductionMonitoringModule.vue`.
 - Se cerró la Tarea 2 (Renderer) al 100%: casos A/B/C validados (PNG existente, render temporal, request-render) e integración del renderer en `ProductionMonitoringModule.vue`.
 - Se inició la Tarea 3 (Actions): componente creado con reglas de habilitación por estado y emits; integrado en `ProductionMonitoringModule.vue`.
+- Se cerró la Tarea 3 (Actions) al 100%: validación de habilitación/deshabilitación y verificación de emisiones (`update`, `change-date`, `render`, `save-svg`, `save-png`, `save-all`).
 
 ---
 
 ## Prompt próximo sugerido (con contexto fijo)
-> Finaliza la Tarea 3 revisando `ProductionMonitoringActions.vue`: valida reglas de habilitación/deshabilitación por estado, verifica emisiones (`update`, `change-date`, `render`, `save-svg`, `save-png`, `save-all`) y marca cierre en progreso.
+> Inicia la Tarea 4 de Integración final: consolida `ProductionMonitoringModule.vue` con Viewer + Renderer + Actions, valida flujo completo (visualizar, request-render, render-ready, save-svg, save-png, save-all) y ajusta payloads finales al padre.
 
 ### Archivos base que debes leer antes de ejecutar el prompt
 1. `docs/modulos/producciones/Monitoring/AGENTS_README.md`
@@ -61,11 +62,12 @@
 4. `AGENTS.md`
 
 ### Archivos que debes actualizar durante el prompt
-1. `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringActions.vue`
-2. `resources/assets/js/modules/producciones/monitoring/ProductionMonitoringModule.vue`
+1. `resources/assets/js/modules/producciones/monitoring/ProductionMonitoringModule.vue`
+2. `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringViewer.vue`
 3. `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringRenderer.vue`
-4. `docs/progreso.md`
+4. `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringActions.vue`
+5. `docs/progreso.md`
 
 
 ### Subprompt de cierre/completado
-> Finaliza la Tarea 3 (Actions): valida habilitación/deshabilitación por estado y emisiones de eventos; actualiza `docs/progreso.md` dejando estado `Cerrada` (100%) o bloqueo explícito.
+> Finaliza la Tarea 4 (Integración): valida flujos end-to-end del módulo y actualiza `docs/progreso.md` con estado `Cerrada` (100%) o bloqueo explícito.

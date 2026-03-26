@@ -144,18 +144,23 @@ export default {
       this.$emit('change-date', this.localDate);
     },
     onUpdate() {
+      if (this.disableUpdate) return;
       this.$emit('update');
     },
     onRender() {
+      if (this.disableRender) return;
       this.$emit('render');
     },
     onSaveSvg() {
+      if (this.disableSaveSvg) return;
       this.$emit('save-svg');
     },
     onSavePng() {
+      if (this.disableSavePng) return;
       this.$emit('save-png');
     },
     onSaveAll() {
+      if (this.disableSaveAll) return;
       this.$emit('save-all');
     }
   }
