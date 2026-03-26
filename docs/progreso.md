@@ -9,6 +9,7 @@
 - Nombre: `Monitoring Scene UI`
 - Ruta objetivo: `resources/assets/js/modules/producciones/monitoring`
 - Documento base: `docs/modulos/producciones/Monitoring/AGENTS_README.md`
+- Guía UI base: `docs/ui_reglasgenerales.md`
 - Última actualización: `2026-03-26`
 
 ## Estado general
@@ -42,8 +43,19 @@
 ### 2026-03-26
 - Se separó documentación general (`README.MD`) de seguimiento operativo (`docs/progreso.md`).
 - Se confirmó que el progreso se llevará aquí para trabajar un módulo a la vez.
+- Se agregó regla UI global para Materialize + estilo limpio/moderno/minimalista.
 
 ---
 
-## Prompt próximo sugerido
-> Inicia la Tarea 1 creando `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringViewer.vue` con estados visuales base y sin lógica de persistencia.
+## Prompt próximo sugerido (con contexto fijo)
+> Inicia la Tarea 1 creando `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringViewer.vue` con estados visuales base y sin lógica de persistencia, aplicando `docs/ui_reglasgenerales.md`.
+
+### Archivos base que debes leer antes de ejecutar el prompt
+1. `docs/modulos/producciones/Monitoring/AGENTS_README.md`
+2. `docs/ui_reglasgenerales.md`
+3. `docs/progreso.md`
+4. `AGENTS.md`
+
+### Archivos que debes actualizar durante el prompt
+1. `resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringViewer.vue`
+2. `docs/progreso.md`
