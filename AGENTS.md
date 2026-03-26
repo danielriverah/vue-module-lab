@@ -1,14 +1,10 @@
 # AGENTS.md — Proyecto principal `vue-module-lab`
 
 ## Objetivo operativo
-Implementar el módulo Monitoring con 4 tareas:
-1. Viewer
-2. Renderer
-3. Actions
-4. Integración
+Implementar módulos de forma ordenada, desacoplada y con seguimiento claro del avance activo.
 
-## Ruta oficial de creación (obligatoria)
-Toda creación del módulo debe vivir en:
+## Ruta oficial de creación para Monitoring
+Toda creación del módulo Monitoring debe vivir en:
 
 `resources/assets/js/modules/producciones/monitoring`
 
@@ -21,11 +17,15 @@ Cada tarea itera de forma obligatoria:
 3. **Testing** (feliz + bordes)
 4. **Nueva creación** (ajustes por hallazgos)
 
+## Dónde registrar avance
+- El estado operativo del módulo en curso se registra en `docs/progreso.md`.
+- `README.MD` queda reservado para información general del repositorio.
+
 ## Definición de terminado
 - Props/emits documentados.
 - Estados clave cubiertos (`sin detalle`, `cargando`, `error`, `sin preview`, `con preview`).
 - Evidencia de testing.
-- Progreso y próximo prompt actualizados en README.
+- Progreso y próximo paso actualizados en `docs/progreso.md`.
 
 ## Convención de progreso
 - `Pendiente`
