@@ -66,6 +66,7 @@
 - Se agregaron y ejecutaron pruebas unitarias locales para Actions/Renderer/Module; se corrigió una incidencia de contexto en métodos al validar payloads de integración.
 - Se ajustó Renderer para cumplir contrato de props solicitado (`detail`, `preview`, `rendererData`, `selectedDate`, `rendering`) y mantener emisiones `render-ready`, `render-error`, `request-render`.
 - Se actualizó estado detallado de Renderer en este progreso para reflejar etapa actual y validaciones cerradas.
+- Se refinó Renderer con esquema de casos A/B/C más explícito (`availabilityCase`) y emisiones mantenidas (`render-ready`, `render-error`, `request-render`).
 
 ---
 

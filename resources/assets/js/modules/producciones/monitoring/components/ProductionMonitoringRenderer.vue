@@ -1,50 +1,48 @@
 <template>
   <section class="pm-renderer card z-depth-1">
     <div class="card-content">
-      <div class="pm-renderer-header">
+      <div class="pm-header">
         <span class="card-title">Production Monitoring Renderer</span>
         <span class="chip blue lighten-5 blue-text text-darken-3" v-if="selectedDate">
           Fecha: {{ selectedDate }}
         </span>
       </div>
 
-      <div v-if="rendering" class="pm-state-block">
+      <div v-if="rendering" class="pm-state">
         <div class="progress"><div class="indeterminate"></div></div>
         <p class="grey-text text-darken-1">Generando visualización temporal...</p>
       </div>
 
-      <div v-else-if="hasPngPreview" class="card-panel green lighten-5 green-text text-darken-4 pm-state-block">
-        Caso A: ya existe PNG persistido. No se requiere render temporal.
+      <div v-else-if="availabilityCase === 'A'" class="card-panel green lighten-5 green-text text-darken-4 pm-state">
+        Caso A: existe PNG persistido. No se requiere render temporal.
       </div>
 
-      <div v-else-if="renderError" class="card-panel red lighten-5 red-text text-darken-4 pm-state-block">
+      <div v-else-if="renderError" class="card-panel red lighten-5 red-text text-darken-4 pm-state">
         {{ renderError }}
       </div>
 
-      <div v-else-if="hasRenderableData" class="pm-render-result">
-        <p class="green-text text-darken-3">
-          Caso B: no existe PNG, pero hay datos para render temporal.
-        </p>
+      <div v-else-if="availabilityCase === 'B'" class="pm-state">
+        <p class="green-text text-darken-3">Caso B: hay datos para render temporal.</p>
 
-        <div v-if="renderOutput.imageUrl" class="pm-preview-view">
-          <img :src="renderOutput.imageUrl" alt="Render temporal" class="responsive-img z-depth-1 pm-preview-image" />
+        <div v-if="renderOutput.imageUrl" class="pm-preview">
+          <img :src="renderOutput.imageUrl" alt="Render temporal" class="responsive-img z-depth-1 pm-image" />
         </div>
 
-        <div v-else-if="renderOutput.svgContent" class="pm-preview-view">
-          <div class="pm-svg-wrapper" v-html="renderOutput.svgContent"></div>
+        <div v-else-if="renderOutput.svgContent" class="pm-preview">
+          <div class="pm-svg" v-html="renderOutput.svgContent"></div>
         </div>
 
-        <div v-else class="pm-preview-view card-panel grey lighten-4 grey-text text-darken-2">
-          Datos renderizables listos, pendiente de representación visual final.
+        <div v-else class="card-panel grey lighten-4 grey-text text-darken-2 pm-preview">
+          Render temporal listo, sin salida visual final disponible.
         </div>
       </div>
 
-      <div v-else-if="canRequestRender" class="card-panel amber lighten-5 amber-text text-darken-4 pm-state-block">
-        Caso C: no hay PNG ni datos renderizables. Se solicita generación al padre.
+      <div v-else-if="availabilityCase === 'C'" class="card-panel amber lighten-5 amber-text text-darken-4 pm-state">
+        Caso C: no hay PNG ni datos renderizables. Se emite `request-render` al padre.
       </div>
 
-      <div v-else class="card-panel grey lighten-4 grey-text text-darken-2 pm-state-block">
-        Sin detalle para renderizar en la fecha actual.
+      <div v-else class="card-panel grey lighten-4 grey-text text-darken-2 pm-state">
+        Sin detalle para renderizar en la fecha seleccionada.
       </div>
     </div>
   </section>
@@ -54,26 +52,11 @@
 export default {
   name: 'ProductionMonitoringRenderer',
   props: {
-    detail: {
-      type: Object,
-      default: null
-    },
-    preview: {
-      type: Object,
-      default: () => ({})
-    },
-    rendererData: {
-      type: Object,
-      default: null
-    },
-    selectedDate: {
-      type: String,
-      default: null
-    },
-    rendering: {
-      type: Boolean,
-      default: false
-    }
+    detail: { type: Object, default: null },
+    preview: { type: Object, default: () => ({}) },
+    rendererData: { type: Object, default: null },
+    selectedDate: { type: String, default: null },
+    rendering: { type: Boolean, default: false }
   },
   data() {
     return {
@@ -102,6 +85,13 @@ export default {
     },
     canRequestRender() {
       return this.hasDetail && !this.hasPngPreview && !this.hasRenderableData;
+    },
+    availabilityCase() {
+      if (!this.hasDetail) return 'NONE';
+      if (this.hasPngPreview) return 'A';
+      if (this.hasRenderableData) return 'B';
+      if (this.canRequestRender) return 'C';
+      return 'NONE';
     }
   },
   watch: {
@@ -134,32 +124,31 @@ export default {
     evaluateRenderCase() {
       this.renderError = null;
 
-      if (!this.hasDetail) {
-        this.renderOutput = { svgContent: null, imageUrl: null, metadata: null };
-        return;
-      }
-
-      if (this.hasPngPreview) {
+      if (this.availabilityCase === 'A') {
         this.lastRequestSignature = null;
         this.renderOutput = { svgContent: null, imageUrl: null, metadata: { source: 'png-preview' } };
         return;
       }
 
-      if (this.hasRenderableData) {
+      if (this.availabilityCase === 'B') {
         this.lastRequestSignature = null;
         this.prepareRenderOutput();
         return;
       }
 
-      if (this.canRequestRender) {
+      if (this.availabilityCase === 'C') {
+        this.renderOutput = { svgContent: null, imageUrl: null, metadata: null };
         this.emitRequestRender();
+        return;
       }
+
+      this.renderOutput = { svgContent: null, imageUrl: null, metadata: null };
     },
     prepareRenderOutput() {
       try {
         const data = this.rendererData || {};
         const fallbackSvg = this.hasJsonPreview
-          ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120"><rect width="400" height="120" fill="#f5f5f5"/><text x="20" y="65" fill="#424242" font-size="16">JSON disponible: listo para render definitivo</text></svg>'
+          ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120"><rect width="420" height="120" fill="#f5f5f5"/><text x="20" y="65" fill="#424242" font-size="16">JSON disponible: listo para render definitivo</text></svg>'
           : null;
 
         const payload = {
@@ -202,7 +191,6 @@ export default {
       }
 
       this.lastRequestSignature = signature;
-
       this.$emit('request-render', {
         detail: this.detail,
         selectedDate: this.selectedDate,
@@ -218,34 +206,30 @@ export default {
   border-radius: 12px;
 }
 
-.pm-renderer-header {
+.pm-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
 }
 
-.pm-state-block {
+.pm-state {
   margin-top: 12px;
 }
 
-.pm-render-result {
+.pm-preview {
   margin-top: 10px;
 }
 
-.pm-preview-view {
-  margin-top: 10px;
-}
-
-.pm-preview-image,
-.pm-svg-wrapper {
+.pm-image,
+.pm-svg {
   width: 100%;
+  min-height: 180px;
   border-radius: 10px;
   background: #f5f5f5;
-  min-height: 180px;
 }
 
-.pm-svg-wrapper svg {
+.pm-svg svg {
   width: 100%;
   height: auto;
 }
