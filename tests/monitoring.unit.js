@@ -1,0 +1,152 @@
+const fs = require('fs');
+const path = require('path');
+const assert = require('assert');
+const compiler = require('vue-template-compiler');
+const vm = require('vm');
+
+function loadVueComponentDefinition(filePath) {
+  const content = fs.readFileSync(filePath, 'utf8');
+  const parsed = compiler.parseComponent(content);
+  if (!parsed.script || !parsed.script.content) {
+    throw new Error(`No script block found in ${filePath}`);
+  }
+
+  let script = parsed.script.content;
+  script = script.replace(/^\s*import\s+.*?;\s*$/gm, '');
+  script = script.replace(/components\s*:\s*\{[\s\S]*?\},/m, 'components: {},');
+  script = script.replace(/export\s+default/, 'module.exports =');
+
+  const sandbox = { module: { exports: {} }, exports: {} };
+  vm.createContext(sandbox);
+  vm.runInContext(script, sandbox, { filename: filePath });
+  return sandbox.module.exports;
+}
+
+function createEmitCollector(ctx) {
+  ctx.__emits = [];
+  ctx.$emit = (name, payload) => ctx.__emits.push({ name, payload });
+}
+
+function run() {
+  const actionsPath = path.resolve(__dirname, '../resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringActions.vue');
+  const rendererPath = path.resolve(__dirname, '../resources/assets/js/modules/producciones/monitoring/components/ProductionMonitoringRenderer.vue');
+  const modulePath = path.resolve(__dirname, '../resources/assets/js/modules/producciones/monitoring/ProductionMonitoringModule.vue');
+
+  const Actions = loadVueComponentDefinition(actionsPath);
+  const Renderer = loadVueComponentDefinition(rendererPath);
+  const Module = loadVueComponentDefinition(modulePath);
+
+  // Actions: reglas de habilitación y emits
+  {
+    const ctx = {
+      loading: false,
+      updating: false,
+      rendering: false,
+      savingSvg: false,
+      savingPng: false,
+      canRender: false,
+      canSaveSvg: true,
+      canSavePng: true,
+      localDate: '2026-03-26'
+    };
+    createEmitCollector(ctx);
+
+    ctx.disableUpdate = Actions.computed.disableUpdate.call(ctx);
+    ctx.disableRender = Actions.computed.disableRender.call(ctx);
+    ctx.disableSaveSvg = Actions.computed.disableSaveSvg.call(ctx);
+    ctx.disableSavePng = Actions.computed.disableSavePng.call(ctx);
+    ctx.disableSaveAll = Actions.computed.disableSaveAll.call(ctx);
+
+    assert.strictEqual(ctx.disableRender, true, 'disableRender debe ser true cuando canRender=false');
+    Actions.methods.onRender.call(ctx);
+    assert.strictEqual(ctx.__emits.length, 0, 'onRender no debe emitir si está deshabilitado');
+
+    ctx.canRender = true;
+    ctx.disableRender = Actions.computed.disableRender.call(ctx);
+    Actions.methods.onRender.call(ctx);
+    assert.strictEqual(ctx.__emits[0].name, 'render', 'onRender debe emitir render cuando está habilitado');
+
+    Actions.methods.onDateChange.call(ctx, { target: { value: '2026-03-27' } });
+    assert.strictEqual(ctx.__emits[1].name, 'change-date', 'onDateChange debe emitir change-date');
+    assert.strictEqual(ctx.__emits[1].payload, '2026-03-27', 'onDateChange debe emitir la fecha seleccionada');
+  }
+
+  // Renderer: casos A/B/C y deduplicación request-render
+  {
+    const ctx = {
+      detail: { id: 9, clave: 'A1' },
+      preview: { json: { exists: false }, png: { exists: false } },
+      rendererData: null,
+      production: { produccion_id: 1 },
+      selectedDate: '2026-03-26',
+      renderOutput: { svgContent: null, imageUrl: null, metadata: null },
+      renderError: null,
+      lastRequestSignature: null
+    };
+    createEmitCollector(ctx);
+
+    ctx.hasDetail = Renderer.computed.hasDetail.call(ctx);
+    ctx.hasPngPreview = Renderer.computed.hasPngPreview.call(ctx);
+    ctx.hasJsonPreview = Renderer.computed.hasJsonPreview.call(ctx);
+    ctx.hasRenderableData = Renderer.computed.hasRenderableData.call(ctx);
+    ctx.canRequestRender = Renderer.computed.canRequestRender.call(ctx);
+
+    assert.strictEqual(ctx.canRequestRender, true, 'Renderer debe solicitar render en caso C');
+    Renderer.methods.emitRequestRender.call(ctx);
+    Renderer.methods.emitRequestRender.call(ctx);
+    assert.strictEqual(ctx.__emits.length, 1, 'request-render debe deduplicarse');
+    assert.strictEqual(ctx.__emits[0].name, 'request-render', 'Debe emitir request-render');
+
+    // Caso B con JSON preview
+    ctx.preview = { json: { exists: true }, png: { exists: false } };
+    ctx.rendererData = {};
+    ctx.hasJsonPreview = Renderer.computed.hasJsonPreview.call(ctx);
+    ctx.hasRenderableData = Renderer.computed.hasRenderableData.call(ctx);
+    assert.strictEqual(ctx.hasRenderableData, true, 'Con JSON preview debe haber datos renderizables');
+
+    Renderer.methods.prepareRenderOutput.call(ctx);
+    assert.strictEqual(ctx.__emits[1].name, 'render-ready', 'prepareRenderOutput debe emitir render-ready');
+    assert.ok(ctx.__emits[1].payload.svgContent, 'render-ready debe contener svgContent');
+  }
+
+  // Module: integración de payload y datos efectivos
+  {
+    const ctx = {
+      production: { produccion_id: 99 },
+      detail: { id: 7 },
+      preview: {},
+      rendererData: null,
+      selectedDate: '2026-03-26',
+      savingSvg: false,
+      savingPng: false,
+      rendering: false,
+      localRenderResult: null,
+      localRenderError: null,
+      error: null
+    };
+    createEmitCollector(ctx);
+    ctx.basePayload = () => Module.methods.basePayload.call(ctx);
+
+    ctx.normalizedPreview = Module.computed.normalizedPreview.call(ctx);
+    assert.strictEqual(ctx.normalizedPreview.png.exists, false, 'normalizedPreview debe crear defaults');
+
+    Module.methods.onRenderReady.call(ctx, { svgContent: '<svg></svg>', imageUrl: null });
+    ctx.effectiveRenderData = Module.computed.effectiveRenderData.call(ctx);
+    ctx.canSaveSvg = Module.computed.canSaveSvg.call(ctx);
+    assert.strictEqual(ctx.canSaveSvg, true, 'canSaveSvg debe habilitarse tras render-ready local');
+
+    Module.methods.onSaveAll.call(ctx);
+    const saveAllEvent = ctx.__emits.find((e) => e.name === 'save-all');
+    assert.ok(saveAllEvent, 'save-all debe emitirse');
+    assert.strictEqual(saveAllEvent.payload.source, 'actions-save-all', 'save-all debe incluir source');
+  }
+
+  console.log('All Monitoring unit tests passed.');
+}
+
+try {
+  run();
+} catch (error) {
+  console.error(error.message);
+  process.exit(1);
+}
