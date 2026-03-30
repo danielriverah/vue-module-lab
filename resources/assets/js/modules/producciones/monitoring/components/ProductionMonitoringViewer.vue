@@ -362,6 +362,12 @@ export default {
       if (this.rendererData && this.rendererData.imageUrl) {
         images.push({ label: 'Render temporal', url: this.rendererData.imageUrl });
       }
+      if (!images.length && this.hasDetail) {
+        images.push({
+          label: 'Previsualización generada local (sin render persistido)',
+          url: this.buildPendingRenderImage()
+        });
+      }
       return images;
     },
     monitoringJson() {
@@ -404,6 +410,23 @@ export default {
           lng: point[0],
           lat: point[1]
         }));
+    },
+    buildPendingRenderImage() {
+      const title = this.detail && this.detail.clave ? this.detail.clave : 'Sin escena';
+      const date = this.detail && this.detail.fecha ? this.detail.fecha : (this.selectedDate || 'Sin fecha');
+      const svg = [
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320">',
+        '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#eceff1"/><stop offset="100%" stop-color="#cfd8dc"/></linearGradient></defs>',
+        '<rect width="640" height="320" fill="url(#g)"/>',
+        '<text x="24" y="48" font-size="24" fill="#263238" font-family="Arial">Monitoring pendiente de render</text>',
+        '<text x="24" y="86" font-size="18" fill="#37474f" font-family="Arial">Escena: ' + title + '</text>',
+        '<text x="24" y="116" font-size="18" fill="#37474f" font-family="Arial">Fecha: ' + date + '</text>',
+        '<text x="24" y="158" font-size="16" fill="#455a64" font-family="Arial">Sin preview PNG/SVG persistido aún.</text>',
+        '<text x="24" y="188" font-size="16" fill="#455a64" font-family="Arial">Puedes generar imagen desde acciones del módulo.</text>',
+        '</svg>'
+      ].join('');
+
+      return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
     }
   }
 };

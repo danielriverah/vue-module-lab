@@ -84,6 +84,7 @@
 - Se agregó fallback local en `ProductionMonitoringViewer.vue` para evitar warning de componentes `GmapMap/GmapPolygon` no registrados cuando el plugin no se inicializa (ej. key ausente o carga diferida).
 - Se agregó normalización de contratos DynamoDB/MySQL en el contenedor de Monitoring para soportar `production_monitoring` y `detalle` reales: parseo de `S/N/BOOL/L/M`, polígono de producción tipo `lat,long|...`, y visualización del área monitoreada (bbox) + polígono de producción dentro de Google Maps.
 - Se corrigió warning de Vue por `monitoringAreaOptions` moviendo la definición al bloque `computed` de `ProductionMonitoringViewer.vue`.
+- Se actualizaron mocks a contratos reales enviados (DynamoDB + MySQL) y se agregó previsualización local generada (SVG data-uri) cuando aún no existe imagen renderizada persistida.
 
 
 ---

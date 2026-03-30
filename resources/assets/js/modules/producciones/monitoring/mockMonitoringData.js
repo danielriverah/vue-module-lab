@@ -1,48 +1,59 @@
 const MOCK_BASE_PRODUCTION = {
-  produccion_id: 1001,
-  folio: 'PROD-2026-0001',
-  estatus: 'ACTIVA',
-  fecha_siembra: '2025-11-08',
-  ultima_fecha_consultada: '2026-03-29',
-  dias_max_monitoreo: 240,
-  poligono: '31.742000,-116.219000|31.858000,-116.201000|31.847000,-116.121000|31.744000,-116.149000',
+  produccion_id: { N: '1891' },
+  folio: { S: 'TL2601-37' },
+  dias_max_monitoreo: { N: '95' },
+  estatus: { S: 'OPEN' },
+  fecha_siembra: { S: '2026-03-19' },
+  poligono: { S: '21.1177972222222,-100.900811111111|21.1211583333333,-100.898858333333|21.1205194444444,-100.897930555556|21.1173777777778,-100.899711111111' },
   pbox: {
-    min_lat: 31.74,
-    min_lon: -116.22,
-    max_lat: 31.86,
-    max_lon: -116.11,
-    pbox: [-116.22, 31.74, -116.11, 31.86],
-    puntos_bbox: [
-      [31.74, -116.22],
-      [31.74, -116.11],
-      [31.86, -116.11],
-      [31.86, -116.22]
-    ]
-  }
+    M: {
+      max_lat: { N: '21.121158333333' },
+      max_lon: { N: '-100.89793055556' },
+      min_lat: { N: '21.117377777778' },
+      min_lon: { N: '-100.90081111111' },
+      pbox: { L: [{ N: '-100.90081111111' }, { N: '21.117377777778' }, { N: '-100.89793055556' }, { N: '21.121158333333' }] },
+      puntos_bbox: {
+        L: [
+          { L: [{ N: '21.117377777778' }, { N: '-100.90081111111' }] },
+          { L: [{ N: '21.117377777778' }, { N: '-100.89793055556' }] },
+          { L: [{ N: '21.121158333333' }, { N: '-100.89793055556' }] },
+          { L: [{ N: '21.121158333333' }, { N: '-100.90081111111' }] }
+        ]
+      }
+    }
+  },
+  ultima_fecha_consultada: { S: '2026-03-29' }
 };
 
 const MOCK_BASE_DETAIL = {
-  id: 501,
-  clave: 'S2A_20260329_31QCV',
-  folio: 'DET-2026-03-29-A',
-  fecha: '2026-03-29',
-  cloud_cover: 8.6,
-  bbox: [-116.22, 31.74, -116.11, 31.86],
+  id: { S: 'PROD#1891' },
+  clave: { S: 'S2A_14QKJ_20260326_0_L2A' },
+  band_blue: { S: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/3/S2A_14QKJ_20260326_0_L2A/B02.tif' },
+  band_green: { S: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/3/S2A_14QKJ_20260326_0_L2A/B03.tif' },
+  band_nir: { S: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/3/S2A_14QKJ_20260326_0_L2A/B08.tif' },
+  band_red: { S: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/3/S2A_14QKJ_20260326_0_L2A/B04.tif' },
+  band_rededge1: { S: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/3/S2A_14QKJ_20260326_0_L2A/B05.tif' },
+  band_rededge3: { S: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/3/S2A_14QKJ_20260326_0_L2A/B07.tif' },
+  band_swir16: { S: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/3/S2A_14QKJ_20260326_0_L2A/B11.tif' },
+  bbox: { L: [{ N: '-101.899168' }, { N: '20.687254' }, { N: '-100.826462' }, { N: '21.693213' }] },
+  cloud_cover: { N: '0' },
+  collection: { S: 'sentinel-2-l2a' },
+  fecha: { S: '2026-03-27' },
+  folio: { S: 'TL2601-37' },
   polygon: {
-    type: 'Polygon',
-    coordinates: [[
-      [-116.22, 31.74],
-      [-116.11, 31.74],
-      [-116.11, 31.86],
-      [-116.22, 31.86],
-      [-116.22, 31.74]
-    ]]
+    L: [
+      { L: [{ N: '21.117377777778' }, { N: '-100.90081111111' }] },
+      { L: [{ N: '21.117377777778' }, { N: '-100.89793055556' }] },
+      { L: [{ N: '21.121158333333' }, { N: '-100.89793055556' }] },
+      { L: [{ N: '21.121158333333' }, { N: '-100.90081111111' }] }
+    ]
   },
-  collection: 'sentinel-2-l2a',
-  scene_created: '2026-03-29T15:22:10Z',
-  procesado: true,
-  renderizado: false,
-  bandas: ['B02', 'B03', 'B04', 'B08']
+  preview_image: { S: 's3://sentinela-monitoring/previews/PROD_1891/2026-03-27_S2A_14QKJ_20260326_0_L2A.png' },
+  preview_json: { S: 's3://sentinela-monitoring/previews/PROD_1891/2026-03-27_S2A_14QKJ_20260326_0_L2A.json' },
+  preview_svg: { S: 's3://sentinela-monitoring/previews/PROD_1891/2026-03-27_S2A_14QKJ_20260326_0_L2A.svg' },
+  procesado: { BOOL: false },
+  renderizado: { BOOL: false },
+  scene_created: { S: '2026-03-27T05:24:14.229Z' }
 };
 
 const MOCK_PREVIEW_EMPTY = {
@@ -78,7 +89,16 @@ const MOCK_RENDERER_DATA = {
       {
         type: 'Feature',
         properties: { lote: 'L-22', indice_vigor: 0.72 },
-        geometry: MOCK_BASE_DETAIL.polygon
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[
+            [-100.90081111111, 21.117377777778],
+            [-100.89793055556, 21.117377777778],
+            [-100.89793055556, 21.121158333333],
+            [-100.90081111111, 21.121158333333],
+            [-100.90081111111, 21.117377777778]
+          ]]
+        }
       }
     ]
   },
