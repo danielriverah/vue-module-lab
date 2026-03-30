@@ -10,7 +10,7 @@
 - Ruta objetivo: `resources/assets/js/modules/producciones/monitoring`
 - Documento base: `docs/modulos/producciones/Monitoring/AGENTS_README.md`
 - Guía UI base: `docs/ui_reglasgenerales.md`
-- Última actualización: `2026-03-27`
+- Última actualización: `2026-03-30`
 
 ## Estado general
 - Estado: `Cerrada`
@@ -72,6 +72,13 @@
 - Se creó `loadProductionMonitoringModule.js` para montar Monitoring desde dataset HTML y facilitar testings desacoplados del runtime.
 - Se agregó `index.js` del módulo Monitoring para cargar automáticamente `ProductionMonitoringModule.vue` sobre `#production-monitoring-module`.
 - Se actualizaron pruebas unitarias en `tests/monitoring.unit.js` para validar lectura de dataset, listeners fallback y montaje controlado del loader.
+
+
+### 2026-03-30
+- Se agregaron datos ficticios centralizados en `mockMonitoringData.js` para cubrir validaciones clave del módulo: `sin detalle`, `cargando`, `error`, `sin preview` y `con preview`.
+- Se incorporó un mecanismo en `index.js` para activar escenarios mock desde `window.__PRODUCTION_MONITORING_USE_MOCK__` y seleccionar caso con `window.__PRODUCTION_MONITORING_MOCK_SCENARIO__`.
+- Se verificó que las pruebas unitarias existentes de Monitoring continúan pasando sin acoplar persistencia ni backend.
+
 
 ---
 
