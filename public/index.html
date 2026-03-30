@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<!-- //cdn.datatables.net/2.3.7/css/dataTables.dataTables.min.css -->
 	<link rel="stylesheet" href="https://cdn.datatables.net/2.3.7/css/dataTables.dataTables.css" />
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
 	<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.jqueryui.css">
@@ -37,25 +36,17 @@
 			<div class="container-main">
 				<div class="card">
 					<div class="card-content">
-						<!-- <div id="plantacion-index">
-							<actividades-tractor v-bind="datosVista"></actividades-tractor>
-						</div> -->
-						<!-- <div class="app-content" id="plantacion-index">
-							<plantaciones-index @action-emited="accionFromComponente"></plantaciones-index>
-						</div> -->
-						<div id="lote_asign_zona">
+						<!-- <div id="lote_asign_zona">
 							<asign-map-zona :lote="lote"
 								@actualiza-zona-produccion="MandaOrdenActualizar"
 							></asign-map-zona>
-							
-							<!-- <AsignMapZona :lote="lote"></AsignMapZona> -->
 						</div>
-						<button onClick="actionClick()">Tests Articulo lote</button>
+						<button onClick="actionClick()">Tests Articulo lote</button> -->
+						<div id="production-monitoring-module">
+							<ProductionMonitoringModule></ProductionMonitoringModule>
+						</div>
 					</div>
 				</div>
-				<!-- <div class="col s12">
-					<a href="#" onclick="testBtnModuloCargado()" class="btn">Accion desde html</a>
-				</div> -->
 			</div>
 		</main>
 		<script>
@@ -108,9 +99,10 @@
 		<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 		<script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
 		<!-- <script src="/js/app.js"></script> -->
-		<script src="js/modules/activities/assets/activitiesApp.js"></script>
+		<!-- <script src="js/modules/activities/assets/activitiesApp.js"></script> -->
 		<!-- <script src="/js/core/tester.js"></script> -->
-		<script src="/js/modules/lotes/updateLoteZona.js"></script>
+		<!-- <script src="/js/modules/lotes/updateLoteZona.js"></script> -->
+		<script src="/js/modules/producciones/monitoring/assets/index.js"></script>
 
 		<script>
 			window.addEventListener('tabla-recargada', function(){

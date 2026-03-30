@@ -10,7 +10,7 @@
 - Ruta objetivo: `resources/assets/js/modules/producciones/monitoring`
 - Documento base: `docs/modulos/producciones/Monitoring/AGENTS_README.md`
 - Guía UI base: `docs/ui_reglasgenerales.md`
-- Última actualización: `2026-03-26`
+- Última actualización: `2026-03-27`
 
 ## Estado general
 - Estado: `Cerrada`
@@ -67,6 +67,11 @@
 - Se ajustó Renderer para cumplir contrato de props solicitado (`detail`, `preview`, `rendererData`, `selectedDate`, `rendering`) y mantener emisiones `render-ready`, `render-error`, `request-render`.
 - Se actualizó estado detallado de Renderer en este progreso para reflejar etapa actual y validaciones cerradas.
 - Se refinó Renderer con esquema de casos A/B/C más explícito (`availabilityCase`) y emisiones mantenidas (`render-ready`, `render-error`, `request-render`).
+
+### 2026-03-27
+- Se creó `loadProductionMonitoringModule.js` para montar Monitoring desde dataset HTML y facilitar testings desacoplados del runtime.
+- Se agregó `index.js` del módulo Monitoring para cargar automáticamente `ProductionMonitoringModule.vue` sobre `#production-monitoring-module`.
+- Se actualizaron pruebas unitarias en `tests/monitoring.unit.js` para validar lectura de dataset, listeners fallback y montaje controlado del loader.
 
 ---
 
