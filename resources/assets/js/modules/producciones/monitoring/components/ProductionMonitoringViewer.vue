@@ -107,18 +107,23 @@
               <div class="row">
                 <div class="col s12 l7">
                   <div class="pm-map-canvas">
-                    <svg viewBox="0 0 100 100" class="pm-map-svg" role="img" aria-label="Mapa de monitoreo">
-                      <polygon
-                        v-if="detailPolygonPoints"
-                        :points="detailPolygonPoints"
-                        class="pm-map-polygon pm-map-polygon--detail"
+                    <GmapMap
+                      :center="mapCenter"
+                      :zoom="16"
+                      :map-type-id="'satellite'"
+                      style="height: 320px; width: 100%; border-radius: 8px;"
+                    >
+                      <GmapPolygon
+                        v-if="detailPolygonPaths.length"
+                        :paths="detailPolygonPaths"
+                        :options="detailPolygonOptions"
                       />
-                      <polygon
-                        v-if="monitoredPolygonPoints"
-                        :points="monitoredPolygonPoints"
-                        class="pm-map-polygon pm-map-polygon--monitored"
+                      <GmapPolygon
+                        v-if="monitoredPolygonPaths.length"
+                        :paths="monitoredPolygonPaths"
+                        :options="monitoredPolygonOptions"
                       />
-                    </svg>
+                    </GmapMap>
                     <p class="pm-map-note">
                       Área monitoreada + polígono base. Se usa para preparar la imagen final por screenshot.
                     </p>
@@ -236,18 +241,51 @@ export default {
     hasError() {
       return !!this.error;
     },
-    detailPolygonPoints() {
+    detailPolygonPaths() {
       const polygon = this.detail && this.detail.polygon ? this.detail.polygon : null;
-      return this.polygonToSvgPoints(polygon);
+      return this.polygonToMapPaths(polygon);
     },
-    monitoredPolygonPoints() {
+    monitoredPolygonPaths() {
       const feature = this.rendererData &&
         this.rendererData.geojson &&
         this.rendererData.geojson.features &&
         this.rendererData.geojson.features[0];
 
       const polygon = feature && feature.geometry ? feature.geometry : null;
-      return this.polygonToSvgPoints(polygon);
+      return this.polygonToMapPaths(polygon);
+    },
+    mapCenter() {
+      const points = this.monitoredPolygonPaths.length
+        ? this.monitoredPolygonPaths
+        : this.detailPolygonPaths;
+
+      if (!points.length) {
+        return { lat: 23.6345, lng: -102.5528 };
+      }
+
+      const lat = points.reduce((acc, item) => acc + item.lat, 0) / points.length;
+      const lng = points.reduce((acc, item) => acc + item.lng, 0) / points.length;
+      return { lat, lng };
+    },
+    detailPolygonOptions() {
+      return {
+        strokeColor: '#1e88e5',
+        strokeOpacity: 1,
+        strokeWeight: 2,
+        fillColor: '#42a5f5',
+        fillOpacity: 0.25,
+        clickable: false
+      };
+    },
+    monitoredPolygonOptions() {
+      return {
+        strokeColor: '#2e7d32',
+        strokeOpacity: 1,
+        strokeWeight: 2,
+        fillColor: '#66bb6a',
+        fillOpacity: 0.35,
+        clickable: false
+      };
     },
     satelliteReadings() {
       const readings = this.rendererData && Array.isArray(this.rendererData.readings)
@@ -295,28 +333,16 @@ export default {
         ? 'new badge green lighten-4 green-text text-darken-3 pm-badge'
         : 'new badge grey lighten-3 grey-text text-darken-2 pm-badge';
     },
-    polygonToSvgPoints(polygon) {
+    polygonToMapPaths(polygon) {
       if (!polygon || !polygon.coordinates || !Array.isArray(polygon.coordinates[0])) {
-        return '';
+        return [];
       }
 
-      const coords = polygon.coordinates[0];
-      const lons = coords.map((point) => point[0]);
-      const lats = coords.map((point) => point[1]);
-      const minLon = Math.min.apply(null, lons);
-      const maxLon = Math.max.apply(null, lons);
-      const minLat = Math.min.apply(null, lats);
-      const maxLat = Math.max.apply(null, lats);
-      const lonRange = maxLon - minLon || 1;
-      const latRange = maxLat - minLat || 1;
-
-      return coords
-        .map((point) => {
-          const x = ((point[0] - minLon) / lonRange) * 94 + 3;
-          const y = 97 - ((point[1] - minLat) / latRange) * 94;
-          return x.toFixed(2) + ',' + y.toFixed(2);
-        })
-        .join(' ');
+      return polygon.coordinates[0]
+        .map((point) => ({
+          lng: point[0],
+          lat: point[1]
+        }));
     }
   }
 };
@@ -412,27 +438,6 @@ export default {
   border-radius: 10px;
   padding: 8px;
   background: #fafafa;
-}
-
-.pm-map-svg {
-  width: 100%;
-  min-height: 280px;
-  background: linear-gradient(180deg, #e8f5e9, #e3f2fd);
-  border-radius: 8px;
-}
-
-.pm-map-polygon {
-  stroke-width: 1;
-}
-
-.pm-map-polygon--detail {
-  fill: rgba(30, 136, 229, 0.25);
-  stroke: #1e88e5;
-}
-
-.pm-map-polygon--monitored {
-  fill: rgba(67, 160, 71, 0.35);
-  stroke: #2e7d32;
 }
 
 .pm-map-note {

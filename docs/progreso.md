@@ -80,6 +80,7 @@
 - Se verificó que las pruebas unitarias existentes de Monitoring continúan pasando sin acoplar persistencia ni backend.
 - Se actualizó `public/index.html` para inyectar `dataset` inicial del contenedor (`data-production`, `data-detail`, `data-preview`, banderas de estado) y activar mock local (`conPreview`) para validar carga inmediata del módulo.
 - Se amplió `ProductionMonitoringViewer.vue` para dividir la visualización en mapa + tabla de lecturas satelitales, galería de screenshots y bloque opcional para inspección JSON de monitoreo.
+- Se integró `vue2-google-maps` en el `index.js` de Monitoring usando `window.appConfig.mapKey` y `window.appConfig.mapLibreries`, y el Viewer ahora renderiza polígonos reales sobre Google Maps (satellite).
 
 
 ---
