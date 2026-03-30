@@ -3,6 +3,7 @@ const path = require('path');
 const assert = require('assert');
 const compiler = require('vue-template-compiler');
 const vm = require('vm');
+const monitoringLoader = require('../resources/assets/js/modules/producciones/monitoring/loadProductionMonitoringModule.js');
 
 function loadVueComponentDefinition(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
@@ -139,6 +140,57 @@ function run() {
     const saveAllEvent = ctx.__emits.find((e) => e.name === 'save-all');
     assert.ok(saveAllEvent, 'save-all debe emitirse');
     assert.strictEqual(saveAllEvent.payload.source, 'actions-save-all', 'save-all debe incluir source');
+  }
+
+  // Loader JS: lectura de dataset, listeners y montaje desacoplado
+  {
+    const datasetElement = {
+      dataset: {
+        production: JSON.stringify({ produccion_id: 12 }),
+        detail: JSON.stringify({ id: 77 }),
+        preview: JSON.stringify({ png: { exists: true } }),
+        rendererData: '',
+        selectedDate: '2026-03-27',
+        loading: 'false',
+        updating: 'true',
+        rendering: 'false',
+        savingSvg: 'false',
+        savingPng: 'true',
+        error: ''
+      }
+    };
+
+    const props = monitoringLoader.readDatasetProps(datasetElement);
+    assert.strictEqual(props.production.produccion_id, 12, 'readDatasetProps debe leer production');
+    assert.strictEqual(props.updating, true, 'readDatasetProps debe convertir flags booleanas');
+    assert.strictEqual(props.savingPng, true, 'readDatasetProps debe convertir savingPng');
+
+    const listeners = monitoringLoader.withDefaultListeners({
+      render(payload) {
+        this.payload = payload;
+      }
+    });
+    assert.strictEqual(typeof listeners['render'], 'function', 'withDefaultListeners debe conservar listeners custom');
+    assert.strictEqual(typeof listeners['save-all'], 'function', 'withDefaultListeners debe generar listener fallback');
+
+    let mountedOptions = null;
+    function FakeVue(options) {
+      mountedOptions = options;
+      return { __fakeVue: true, options };
+    }
+
+    const app = monitoringLoader.mountProductionMonitoringModule({
+      el: datasetElement,
+      Vue: FakeVue,
+      ModuleComponent: { name: 'ProductionMonitoringModule' },
+      propsData: { selectedDate: '2026-03-28' }
+    });
+
+    assert.ok(app.__fakeVue, 'mountProductionMonitoringModule debe montar instancia Vue');
+    assert.strictEqual(mountedOptions.el, datasetElement, 'mountProductionMonitoringModule debe conservar el elemento destino');
+    const vnode = mountedOptions.render((component, vnodeOptions) => ({ component, vnodeOptions }));
+    assert.strictEqual(vnode.vnodeOptions.props.selectedDate, '2026-03-28', 'propsData explícito debe sobrescribir dataset');
+    assert.strictEqual(vnode.vnodeOptions.props.detail.id, 77, 'props desde dataset deben llegar al render');
   }
 
   console.log('All Monitoring unit tests passed.');
