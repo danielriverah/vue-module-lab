@@ -83,6 +83,7 @@
 - Se integró `vue2-google-maps` en el `index.js` de Monitoring usando `window.appConfig.mapKey` y `window.appConfig.mapLibreries`, y el Viewer ahora renderiza polígonos reales sobre Google Maps (satellite).
 - Se agregó fallback local en `ProductionMonitoringViewer.vue` para evitar warning de componentes `GmapMap/GmapPolygon` no registrados cuando el plugin no se inicializa (ej. key ausente o carga diferida).
 - Se agregó normalización de contratos DynamoDB/MySQL en el contenedor de Monitoring para soportar `production_monitoring` y `detalle` reales: parseo de `S/N/BOOL/L/M`, polígono de producción tipo `lat,long|...`, y visualización del área monitoreada (bbox) + polígono de producción dentro de Google Maps.
+- Se corrigió warning de Vue por `monitoringAreaOptions` moviendo la definición al bloque `computed` de `ProductionMonitoringViewer.vue`.
 
 
 ---

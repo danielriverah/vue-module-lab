@@ -318,6 +318,26 @@ export default {
         clickable: false
       };
     },
+    monitoringAreaOptions() {
+      return {
+        strokeColor: '#ef6c00',
+        strokeOpacity: 1,
+        strokeWeight: 2,
+        fillColor: '#ffcc80',
+        fillOpacity: 0.15,
+        clickable: false
+      };
+    },
+    productionPolygonOptions() {
+      return {
+        strokeColor: '#1565c0',
+        strokeOpacity: 1,
+        strokeWeight: 2,
+        fillColor: '#90caf9',
+        fillOpacity: 0.3,
+        clickable: false
+      };
+    },
     monitoredPolygonOptions() {
       return {
         strokeColor: '#2e7d32',
@@ -527,23 +547,3 @@ export default {
   border-radius: 8px;
 }
 </style>
-    monitoringAreaOptions() {
-      return {
-        strokeColor: '#ef6c00',
-        strokeOpacity: 1,
-        strokeWeight: 2,
-        fillColor: '#ffcc80',
-        fillOpacity: 0.15,
-        clickable: false
-      };
-    },
-    productionPolygonOptions() {
-      return {
-        strokeColor: '#1565c0',
-        strokeOpacity: 1,
-        strokeWeight: 2,
-        fillColor: '#90caf9',
-        fillOpacity: 0.3,
-        clickable: false
-      };
-    },
