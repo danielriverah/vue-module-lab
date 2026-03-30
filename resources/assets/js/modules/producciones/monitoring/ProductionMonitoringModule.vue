@@ -5,6 +5,8 @@
       :detail="normalizedDetail"
       :preview="normalizedPreview"
       :renderer-data="effectiveRenderData"
+      :timeline-items="timelineItems"
+      :scene-status="sceneStatus"
       :selected-date="selectedDate"
       :loading="loading"
       :error="moduleError"
@@ -49,6 +51,9 @@
 import ProductionMonitoringViewer from './components/ProductionMonitoringViewer.vue';
 import ProductionMonitoringRenderer from './components/ProductionMonitoringRenderer.vue';
 import ProductionMonitoringActions from './components/ProductionMonitoringActions.vue';
+const sceneLibrary = typeof require === 'function'
+  ? require('./utils/monitoringSceneLibrary')
+  : {};
 
 function isObject(value) {
   return !!value && typeof value === 'object' && !Array.isArray(value);
@@ -160,6 +165,10 @@ export default {
       type: Object,
       default: () => ({})
     },
+    details: {
+      type: Array,
+      default: () => []
+    },
     rendererData: {
       type: Object,
       default: null
@@ -223,6 +232,26 @@ export default {
     },
     normalizedDetail() {
       return normalizeDetail(this.detail);
+    },
+    normalizedDetails() {
+      const items = this.details && this.details.length ? this.details : (this.detail ? [this.detail] : []);
+      return items.map((item) => normalizeDetail(item));
+    },
+    timelineItems() {
+      if (sceneLibrary.buildTimelineItems) {
+        return sceneLibrary.buildTimelineItems(this.normalizedDetails);
+      }
+      return this.normalizedDetails.map((detail) => ({
+        date: detail.fecha || detail.scene_created || null,
+        status: 'unknown',
+        detail
+      })).filter((item) => !!item.date);
+    },
+    sceneStatus() {
+      if (sceneLibrary.resolveSceneStatus) {
+        return sceneLibrary.resolveSceneStatus(this.normalizedDetail);
+      }
+      return this.hasDetail ? 'unknown' : 'no-detail';
     },
     effectiveRenderData() {
       return this.rendererData || this.localRenderResult || null;

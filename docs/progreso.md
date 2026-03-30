@@ -86,6 +86,7 @@
 - Se corrigió warning de Vue por `monitoringAreaOptions` moviendo la definición al bloque `computed` de `ProductionMonitoringViewer.vue`.
 - Se actualizaron mocks a contratos reales enviados (DynamoDB + MySQL) y se agregó previsualización local generada (SVG data-uri) cuando aún no existe imagen renderizada persistida.
 - Se creó la librería `monitoringSceneLibrary.js` con timeline/navegador de fechas, estado de escena, generación de previews (`natural`, `false color`, `SWIR-NIR-RED`, `NDVI`) mediante `geotiff`, utilidades Leaflet (`bbox/imageBounds/polígonos`) y helpers para guardar blobs.
+- Se integró la librería en `ProductionMonitoringModule.vue` para exponer `timelineItems` y `sceneStatus` al Viewer, y se añadió documentación breve de uso en `docs/modulos/producciones/Monitoring/monitoring_scene_library.md`.
 
 
 ---

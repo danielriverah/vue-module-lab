@@ -14,6 +14,15 @@
           </span>
         </div>
 
+        <div class="pm-status-row-top">
+          <span class="chip blue lighten-5 blue-text text-darken-3">
+            Estado escena: {{ sceneStatus || 'unknown' }}
+          </span>
+          <span class="chip grey lighten-4 grey-text text-darken-2">
+            Fechas con datos: {{ timelineItems.length }}
+          </span>
+        </div>
+
         <div v-if="loading" class="pm-state-block">
           <div class="progress">
             <div class="indeterminate"></div>
@@ -238,6 +247,14 @@ export default {
       type: Object,
       default: null
     },
+    timelineItems: {
+      type: Array,
+      default: () => []
+    },
+    sceneStatus: {
+      type: String,
+      default: 'unknown'
+    },
     selectedDate: {
       type: String,
       default: null
@@ -451,6 +468,13 @@ export default {
 
 .pm-subtitle {
   margin: 0;
+}
+
+.pm-status-row-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .pm-state-block {
