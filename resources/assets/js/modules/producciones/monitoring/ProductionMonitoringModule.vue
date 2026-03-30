@@ -130,7 +130,14 @@ function bboxToPolygon(bbox) {
 
 function normalizeProduction(rawProduction) {
   const production = unwrapDynamo(rawProduction || {});
-  const pbox = production && production.pbox ? production.pbox : null;
+  const pboxRaw = production && production.pbox ? production.pbox : null;
+  const pbox = typeof pboxRaw === 'string' ? (() => {
+    try {
+      return JSON.parse(pboxRaw);
+    } catch (error) {
+      return null;
+    }
+  })() : pboxRaw;
   return Object.assign({}, production, {
     poligono_points: parseMysqlPolygon(production && production.poligono),
     pbox_polygon: normalizePolygon(pbox && pbox.puntos_bbox) || bboxToPolygon(pbox && pbox.pbox)
@@ -139,10 +146,41 @@ function normalizeProduction(rawProduction) {
 
 function normalizeDetail(rawDetail) {
   const detail = unwrapDynamo(rawDetail || {});
+  const productionNested = detail && detail.produccion ? unwrapDynamo(detail.produccion) : null;
   return Object.assign({}, detail, {
+    produccion: productionNested,
     polygon: normalizePolygon(detail.polygon),
-    bbox_polygon: bboxToPolygon(detail.bbox)
+    bbox_polygon: bboxToPolygon(detail.bbox),
+    bands: {
+      blue: detail.band_blue || null,
+      green: detail.band_green || null,
+      red: detail.band_red || null,
+      nir: detail.band_nir || null,
+      rededge1: detail.band_rededge1 || null,
+      rededge3: detail.band_rededge3 || null,
+      swir16: detail.band_swir16 || null
+    }
   });
+}
+
+function extractMonitoringPayload(rawPayload) {
+  if (!rawPayload || typeof rawPayload !== 'object') {
+    return null;
+  }
+
+  const payload = unwrapDynamo(rawPayload);
+  const details = Array.isArray(payload.detalle)
+    ? payload.detalle.filter((item) => !!item && typeof item === 'object')
+    : [];
+  const firstDetail = details[0] || null;
+  const lastDetail = details.length ? details[details.length - 1] : null;
+
+  return {
+    production: payload.prod || payload.production || null,
+    detail: lastDetail || firstDetail,
+    details,
+    produccion: (firstDetail && firstDetail.produccion) || payload.produccion || null
+  };
 }
 
 export default {
@@ -164,6 +202,10 @@ export default {
     preview: {
       type: Object,
       default: () => ({})
+    },
+    monitoringPayload: {
+      type: Object,
+      default: null
     },
     details: {
       type: Array,
@@ -209,32 +251,49 @@ export default {
     };
   },
   computed: {
+    extractedPayload() {
+      return extractMonitoringPayload(this.monitoringPayload);
+    },
     normalizedPreview() {
       const incoming = this.preview || {};
       const fromDetail = this.normalizedDetail || {};
+      const apiPreviewBase = this.normalizedProduction && this.normalizedProduction.produccion_id
+        ? '/api/producciones/' + this.normalizedProduction.produccion_id + '/monitoring/previews'
+        : null;
       return {
         json: Object.assign({ exists: false, url: null, key: null }, incoming.json || {}, {
-          url: (incoming.json && incoming.json.url) || fromDetail.preview_json || null,
-          exists: (incoming.json && incoming.json.exists) || !!fromDetail.preview_json
+          url: (incoming.json && incoming.json.url) || null,
+          exists: false,
+          pendingApiUrl: apiPreviewBase ? apiPreviewBase + '/json?fecha=' + (this.selectedDate || '') : null,
+          fallbackKey: fromDetail.preview_json || null
         }),
         svg: Object.assign({ exists: false, url: null, key: null }, incoming.svg || {}, {
-          url: (incoming.svg && incoming.svg.url) || fromDetail.preview_svg || null,
-          exists: (incoming.svg && incoming.svg.exists) || !!fromDetail.preview_svg
+          url: (incoming.svg && incoming.svg.url) || null,
+          exists: false,
+          pendingApiUrl: apiPreviewBase ? apiPreviewBase + '/svg?fecha=' + (this.selectedDate || '') : null,
+          fallbackKey: fromDetail.preview_svg || null
         }),
         png: Object.assign({ exists: false, url: null, key: null }, incoming.png || {}, {
-          url: (incoming.png && incoming.png.url) || fromDetail.preview_image || null,
-          exists: (incoming.png && incoming.png.exists) || !!fromDetail.preview_image
+          url: (incoming.png && incoming.png.url) || null,
+          exists: false,
+          pendingApiUrl: apiPreviewBase ? apiPreviewBase + '/png?fecha=' + (this.selectedDate || '') : null,
+          fallbackKey: fromDetail.preview_image || null
         })
       };
     },
     normalizedProduction() {
-      return normalizeProduction(this.production);
+      const productionSource = (this.extractedPayload && this.extractedPayload.production) || this.production;
+      return normalizeProduction(productionSource);
     },
     normalizedDetail() {
-      return normalizeDetail(this.detail);
+      const detailSource = (this.extractedPayload && this.extractedPayload.detail) || this.detail;
+      return normalizeDetail(detailSource);
     },
     normalizedDetails() {
-      const items = this.details && this.details.length ? this.details : (this.detail ? [this.detail] : []);
+      const payloadDetails = this.extractedPayload && this.extractedPayload.details;
+      const items = payloadDetails && payloadDetails.length
+        ? payloadDetails
+        : (this.details && this.details.length ? this.details : (this.normalizedDetail ? [this.normalizedDetail] : []));
       return items.map((item) => normalizeDetail(item));
     },
     timelineItems() {
@@ -304,7 +363,12 @@ export default {
       return {
         production: this.normalizedProduction,
         detail: this.normalizedDetail,
+        details: this.normalizedDetails,
+        produccion: this.normalizedDetail && this.normalizedDetail.produccion
+          ? this.normalizedDetail.produccion
+          : (this.extractedPayload && this.extractedPayload.produccion) || null,
         selectedDate: this.selectedDate,
+        preview: this.normalizedPreview,
         rendererData: this.effectiveRenderData
       };
     },

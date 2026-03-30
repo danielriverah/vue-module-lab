@@ -49,6 +49,7 @@
                 <li><strong>Fecha siembra:</strong> {{ getValue(production.fecha_siembra) }}</li>
                 <li><strong>Última fecha consultada:</strong> {{ getValue(production.ultima_fecha_consultada) }}</li>
                 <li><strong>Días máx. monitoreo:</strong> {{ getValue(production.dias_max_monitoreo) }}</li>
+                <li><strong>Última fecha escena:</strong> {{ getValue(production.ultima_fecha) }}</li>
               </ul>
               <p v-else class="grey-text text-darken-1">Sin información de producción.</p>
             </div>
@@ -64,6 +65,7 @@
                 <li><strong>Colección:</strong> {{ getValue(detail.collection) }}</li>
                 <li><strong>Procesado:</strong> {{ getValue(detail.procesado) }}</li>
                 <li><strong>Renderizado:</strong> {{ getValue(detail.renderizado) }}</li>
+                <li><strong>Creación escena:</strong> {{ getValue(detail.scene_created) }}</li>
               </ul>
               <p v-else class="grey-text text-darken-1">No existe detalle para la fecha seleccionada.</p>
             </div>
@@ -107,6 +109,13 @@
               <p v-else class="grey-text text-darken-1 pm-empty-preview">
                 No existe preview visual persistido para esta fecha.
               </p>
+
+              <div class="pm-api-pending card-panel blue-grey lighten-5" v-if="pendingPreviewApiUrls.length">
+                <p><strong>Preview API (pendiente):</strong> se solicitarán desde backend, pero se fuerza render con GeoTIFF.</p>
+                <ul class="browser-default pm-list">
+                  <li v-for="(url, idx) in pendingPreviewApiUrls" :key="url + '-' + idx">{{ url }}</li>
+                </ul>
+              </div>
             </div>
           </div>
 
@@ -387,9 +396,17 @@ export default {
       }
       return images;
     },
+    pendingPreviewApiUrls() {
+      const urls = [];
+      if (this.preview && this.preview.json && this.preview.json.pendingApiUrl) urls.push(this.preview.json.pendingApiUrl);
+      if (this.preview && this.preview.svg && this.preview.svg.pendingApiUrl) urls.push(this.preview.svg.pendingApiUrl);
+      if (this.preview && this.preview.png && this.preview.png.pendingApiUrl) urls.push(this.preview.png.pendingApiUrl);
+      return urls.filter(Boolean);
+    },
     monitoringJson() {
       const payload = {
         detail: this.detail || null,
+        produccion: this.detail && this.detail.produccion ? this.detail.produccion : null,
         preview: this.preview || null,
         rendererData: this.rendererData || null
       };

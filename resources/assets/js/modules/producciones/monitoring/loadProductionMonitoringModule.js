@@ -28,7 +28,9 @@ function readDatasetProps(el) {
   return {
     production: parseJSON(dataset.production, null),
     detail: parseJSON(dataset.detail, null),
+    details: parseJSON(dataset.details, []),
     preview: parseJSON(dataset.preview, {}),
+    monitoringPayload: parseJSON(dataset.monitoringPayload || dataset.monitoringData, null),
     rendererData: parseJSON(dataset.rendererData, null),
     selectedDate: dataset.selectedDate || null,
     loading: dataset.loading === 'true',
