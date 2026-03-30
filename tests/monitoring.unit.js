@@ -82,7 +82,8 @@ function run() {
       selectedDate: '2026-03-26',
       renderOutput: { svgContent: null, imageUrl: null, metadata: null },
       renderError: null,
-      lastRequestSignature: null
+      lastRequestSignature: null,
+      lastReadySignature: null
     };
     createEmitCollector(ctx);
 
@@ -108,6 +109,8 @@ function run() {
     Renderer.methods.prepareRenderOutput.call(ctx);
     assert.strictEqual(ctx.__emits[1].name, 'render-ready', 'prepareRenderOutput debe emitir render-ready');
     assert.ok(ctx.__emits[1].payload.svgContent, 'render-ready debe contener svgContent');
+    Renderer.methods.prepareRenderOutput.call(ctx);
+    assert.strictEqual(ctx.__emits.length, 2, 'render-ready no debe emitirse en bucle con misma firma');
   }
 
   // Module: integración de payload y datos efectivos

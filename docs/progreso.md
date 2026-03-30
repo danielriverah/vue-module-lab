@@ -93,6 +93,7 @@
 - Se documentaron en Viewer URLs pendientes de API de previews y campos adicionales relevantes (`ultima_fecha`, `scene_created`, `produccion` anidada en JSON).
 - Se actualizó `loadProductionMonitoringModule.js` para leer `data-monitoring-payload`/`data-monitoring-data` y `data-details`.
 - Se extendieron pruebas unitarias para cubrir parsing de payload agregado, URLs pendientes de preview API y compatibilidad del loader.
+- Se corrigió un bucle de inicialización en `ProductionMonitoringRenderer.vue` deduplicando emisiones `render-ready` por firma de salida para evitar espera indefinida al montar la vista.
 
 
 ---

@@ -66,7 +66,8 @@ export default {
         metadata: null
       },
       renderError: null,
-      lastRequestSignature: null
+      lastRequestSignature: null,
+      lastReadySignature: null
     };
   },
   computed: {
@@ -148,6 +149,7 @@ export default {
 
       if (this.availabilityCase === 'A') {
         this.lastRequestSignature = null;
+        this.lastReadySignature = null;
         this.renderOutput = { svgContent: null, imageUrl: null, metadata: { source: 'png-preview' } };
         return;
       }
@@ -200,8 +202,19 @@ export default {
           imageUrl: payload.imageUrl,
           metadata: payload.metadata
         };
+        const readySignature = [
+          this.selectedDate || '',
+          payload.metadata && payload.metadata.detailId ? payload.metadata.detailId : '',
+          payload.metadata && payload.metadata.source ? payload.metadata.source : '',
+          payload.metadata && payload.metadata.strategy ? payload.metadata.strategy : '',
+          payload.imageUrl || '',
+          payload.svgContent ? payload.svgContent.length : 0
+        ].join('|');
 
-        this.$emit('render-ready', payload);
+        if (this.lastReadySignature !== readySignature) {
+          this.lastReadySignature = readySignature;
+          this.$emit('render-ready', payload);
+        }
       } catch (error) {
         const message = error && error.message ? error.message : 'Error al preparar render temporal.';
         this.renderError = message;
@@ -224,6 +237,7 @@ export default {
       }
 
       this.lastRequestSignature = signature;
+      this.lastReadySignature = null;
       this.$emit('request-render', {
         detail: this.detail,
         selectedDate: this.selectedDate,
