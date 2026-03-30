@@ -5,6 +5,6 @@
     "/css/app.css.map": "/css/app.css.map",
     "/js/modules/activities/assets/activitiesApp.js": "/js/modules/activities/assets/activitiesApp.js",
     "/js/modules/activities/assets/activitiesApp.js.map": "/js/modules/activities/assets/activitiesApp.js.map",
-    "/js/modules/lotes/updateLoteZona.js": "/js/modules/lotes/updateLoteZona.js",
-    "/js/modules/lotes/updateLoteZona.js.map": "/js/modules/lotes/updateLoteZona.js.map"
+    "/js/modules/producciones/monitoring/assets/index.js": "/js/modules/producciones/monitoring/assets/index.js",
+    "/js/modules/producciones/monitoring/assets/index.js.map": "/js/modules/producciones/monitoring/assets/index.js.map"
 }

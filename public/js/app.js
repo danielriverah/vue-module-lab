@@ -3306,7 +3306,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _VisualizaDoctoPlantacion_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./VisualizaDoctoPlantacion.vue */ "./resources/assets/js/components/modulos/producciones/plantaciones/VisualizaDoctoPlantacion.vue");
 /* harmony import */ var _doctos_DoctoProduccionCreate_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../doctos/DoctoProduccionCreate.vue */ "./resources/assets/js/components/modulos/producciones/doctos/DoctoProduccionCreate.vue");
 /* harmony import */ var _ui_UiButton_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../ui/UiButton.vue */ "./resources/assets/js/components/ui/UiButton.vue");
-/* harmony import */ var _ui_UiToggleDivider_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../ui/UiToggleDivider.vue */ "./resources/assets/js/components/ui/UiToggleDivider.vue");
+/* harmony import */ var _ui_UiToggleDivider_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../ui/UiToggleDivider_.vue */ "./resources/assets/js/components/ui/UiToggleDivider_.vue");
 //
 //
 //
@@ -5198,6 +5198,66 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=script&lang=js":
+/*!************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=script&lang=js ***!
+  \************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    value: {
+      type: Boolean,
+      "default": false
+    }
+  },
+  data: function data() {
+    return {
+      arrows: ''
+    };
+  },
+  mounted: function mounted() {
+    this.fill();
+    window.addEventListener('resize', this.fill);
+  },
+  beforeDestroy: function beforeDestroy() {
+    window.removeEventListener('resize', this.fill);
+  },
+  methods: {
+    fill: function fill() {
+      var width = this.$el.offsetWidth;
+      var count = Math.floor(width / 14);
+      var icon = this.value ? '⌃' : '⌄';
+      this.arrows = Array(count).fill(icon).join('');
+    },
+    toggle: function toggle() {
+      this.$emit('input', !this.value);
+      this.$nextTick(this.fill);
+    }
+  },
+  watch: {
+    value: function value() {
+      this.$nextTick(this.fill);
+    }
+  }
+  // template:`
+  //     <div class="toggle-divider" @click="toggle">
+  //     {{ arrows }}
+  //     </div>
+  // `
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/polygons_map/UiGpxImportWizard.vue?vue&type=script&lang=js":
 /*!************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/polygons_map/UiGpxImportWizard.vue?vue&type=script&lang=js ***!
@@ -6096,6 +6156,24 @@ var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_mo
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, "\n.toggle-divider[data-v-0acb66a6]{\n        width:100%;\n        text-align:center;\n        cursor:pointer;\n        -webkit-user-select:none;\n           -moz-user-select:none;\n                user-select:none;\n        /* color:#888; */\n        letter-spacing:6px;\n        padding:6px 0;\n        font-size:14px;\n        transition:all .2s ease;\n        white-space: nowrap;\n}\n.toggle-arrows[data-v-0acb66a6]{\n        flex:1;\n        text-align:center;\n        letter-spacing:6px;\n        white-space:nowrap;\n}\n    /* ---------- variante dashed ---------- */\n.toggle-divider.dashed.close[data-v-0acb66a6]{\n        border-top:1px dashed #ccc;\n}\n.toggle-divider.dashed.open[data-v-0acb66a6]{\n        border-bottom:1px dashed #ccc;\n}\n.toggle-divider.dashed[data-v-0acb66a6]:hover{\n        border-color:rgb(65,143,247);\n}\n\n    /* ---------- variante subtle ---------- */\n.toggle-divider.subtle[data-v-0acb66a6]{\n        color:#bbb;\n}\n.toggle-divider.subtle[data-v-0acb66a6]:hover{\n        color:#666;\n        background:rgba(0,0,0,0.04);\n}\n\n    /* ---------- variante solid ---------- */\n.toggle-divider.solid[data-v-0acb66a6]{\n        border-top:1px solid #ddd;\n}\n.toggle-divider.solid.open[data-v-0acb66a6]{\n        border-bottom:1px solid #ddd;\n}\n/**************************************** * */\n.slot-left[data-v-0acb66a6],\n    .slot-right[data-v-0acb66a6]{\n        display:flex;\n        align-items:center;\n        padding:0 6px;\n}\n.toggle-divider.close[data-v-0acb66a6]:hover{\n        border-top:1px dashed rgb(65,143,247);\n}\n.toggle-divider.open[data-v-0acb66a6]:hover{\n        border-bottom:1px dashed rgb(65,143,247);\n}\n.toggle-divider[data-v-0acb66a6]:hover{\n        color:rgb(65,143,247);\n        transform:translateY(1px);\n}\n.toggle-divider.close[data-v-0acb66a6]:hover{\n        border-top: 1px dashed rgb(65, 143, 247);\n}\n.toggle-divider.open[data-v-0acb66a6]:hover{\n        border-bottom: 1px dashed rgb(65, 143, 247);\n}\n.toggle-divider[data-v-0acb66a6]:hover{\n        color:rgb(65, 143, 247);\n        /* background:rgba(0,0,0,0.03); */\n        transform:translateY(1px);\n}\n", ""]);
+// Exports
+module.exports = exports;
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=style&index=0&id=5b411402&scoped=true&lang=css":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=style&index=0&id=5b411402&scoped=true&lang=css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Imports
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+exports = ___CSS_LOADER_API_IMPORT___(false);
+// Module
+exports.push([module.i, "\n.toggle-divider[data-v-5b411402]{\n    width:100%;\n    text-align:center;\n    cursor:pointer;\n    -webkit-user-select:none;\n       -moz-user-select:none;\n            user-select:none;\n    color:#888;\n    letter-spacing:6px;\n    padding:6px 0;\n    font-size:14px;\n    transition:all .2s ease;\n    white-space: nowrap;\n}\n.toggle-divider.close[data-v-5b411402]:hover{\n    border-top: 1px dashed rgb(65, 143, 247);\n}\n.toggle-divider.open[data-v-5b411402]:hover{\n    border-bottom: 1px dashed rgb(65, 143, 247);\n}\n.toggle-divider[data-v-5b411402]:hover{\n    color:rgb(65, 143, 247);\n    /* background:rgba(0,0,0,0.03); */\n    transform:translateY(1px);\n}\n", ""]);
 // Exports
 module.exports = exports;
 
@@ -32661,6 +32739,36 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/dist/cjs.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=style&index=0&id=5b411402&scoped=true&lang=css":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader/dist/cjs.js??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=style&index=0&id=5b411402&scoped=true&lang=css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../../node_modules/css-loader/dist/cjs.js??ref--6-1!../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../node_modules/postcss-loader/src??ref--6-2!../../../../../node_modules/vue-loader/lib??vue-loader-options!./UiToggleDivider_.vue?vue&type=style&index=0&id=5b411402&scoped=true&lang=css */ "./node_modules/css-loader/dist/cjs.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=style&index=0&id=5b411402&scoped=true&lang=css");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/dist/cjs.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/polygons_map/UiListaPolygonoos.vue?vue&type=style&index=0&id=39b469a1&scoped=true&lang=css":
 /*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader/dist/cjs.js??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/polygons_map/UiListaPolygonoos.vue?vue&type=style&index=0&id=39b469a1&scoped=true&lang=css ***!
@@ -35513,6 +35621,38 @@ var render = function () {
       _vm._v(" "),
       _c("div", { staticClass: "slot-right" }, [_vm._t("right")], 2),
     ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=template&id=5b411402&scoped=true":
+/*!****************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=template&id=5b411402&scoped=true ***!
+  \****************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function () {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "toggle-divider",
+      class: { open: _vm.value, close: !_vm.value },
+      on: { click: _vm.toggle },
+    },
+    [_vm._v("\n    " + _vm._s(_vm.arrows) + "\n")]
   )
 }
 var staticRenderFns = []
@@ -52244,6 +52384,93 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_UiToggleDivider_vue_vue_type_template_id_0acb66a6_scoped_true__WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_UiToggleDivider_vue_vue_type_template_id_0acb66a6_scoped_true__WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/assets/js/components/ui/UiToggleDivider_.vue":
+/*!****************************************************************!*\
+  !*** ./resources/assets/js/components/ui/UiToggleDivider_.vue ***!
+  \****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _UiToggleDivider_vue_vue_type_template_id_5b411402_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./UiToggleDivider_.vue?vue&type=template&id=5b411402&scoped=true */ "./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=template&id=5b411402&scoped=true");
+/* harmony import */ var _UiToggleDivider_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./UiToggleDivider_.vue?vue&type=script&lang=js */ "./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=script&lang=js");
+/* empty/unused harmony star reexport *//* harmony import */ var _UiToggleDivider_vue_vue_type_style_index_0_id_5b411402_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./UiToggleDivider_.vue?vue&type=style&index=0&id=5b411402&scoped=true&lang=css */ "./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=style&index=0&id=5b411402&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _UiToggleDivider_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"],
+  _UiToggleDivider_vue_vue_type_template_id_5b411402_scoped_true__WEBPACK_IMPORTED_MODULE_0__["render"],
+  _UiToggleDivider_vue_vue_type_template_id_5b411402_scoped_true__WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "5b411402",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/assets/js/components/ui/UiToggleDivider_.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=script&lang=js":
+/*!****************************************************************************************!*\
+  !*** ./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=script&lang=js ***!
+  \****************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_UiToggleDivider_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib??ref--4-0!../../../../../node_modules/vue-loader/lib??vue-loader-options!./UiToggleDivider_.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=script&lang=js");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_UiToggleDivider_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=style&index=0&id=5b411402&scoped=true&lang=css":
+/*!************************************************************************************************************************!*\
+  !*** ./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=style&index=0&id=5b411402&scoped=true&lang=css ***!
+  \************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_dist_cjs_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_UiToggleDivider_vue_vue_type_style_index_0_id_5b411402_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/style-loader!../../../../../node_modules/css-loader/dist/cjs.js??ref--6-1!../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../node_modules/postcss-loader/src??ref--6-2!../../../../../node_modules/vue-loader/lib??vue-loader-options!./UiToggleDivider_.vue?vue&type=style&index=0&id=5b411402&scoped=true&lang=css */ "./node_modules/style-loader/index.js!./node_modules/css-loader/dist/cjs.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=style&index=0&id=5b411402&scoped=true&lang=css");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_dist_cjs_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_UiToggleDivider_vue_vue_type_style_index_0_id_5b411402_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_dist_cjs_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_UiToggleDivider_vue_vue_type_style_index_0_id_5b411402_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_dist_cjs_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_UiToggleDivider_vue_vue_type_style_index_0_id_5b411402_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_dist_cjs_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_UiToggleDivider_vue_vue_type_style_index_0_id_5b411402_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+
+
+/***/ }),
+
+/***/ "./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=template&id=5b411402&scoped=true":
+/*!**********************************************************************************************************!*\
+  !*** ./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=template&id=5b411402&scoped=true ***!
+  \**********************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_UiToggleDivider_vue_vue_type_template_id_5b411402_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../node_modules/vue-loader/lib??vue-loader-options!./UiToggleDivider_.vue?vue&type=template&id=5b411402&scoped=true */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/ui/UiToggleDivider_.vue?vue&type=template&id=5b411402&scoped=true");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_UiToggleDivider_vue_vue_type_template_id_5b411402_scoped_true__WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_UiToggleDivider_vue_vue_type_template_id_5b411402_scoped_true__WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
