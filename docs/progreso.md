@@ -10,7 +10,7 @@
 - Ruta objetivo: `resources/assets/js/modules/producciones/monitoring`
 - Documento base: `docs/modulos/producciones/Monitoring/AGENTS_README.md`
 - Guía UI base: `docs/ui_reglasgenerales.md`
-- Última actualización: `2026-03-27`
+- Última actualización: `2026-03-30`
 
 ## Estado general
 - Estado: `Cerrada`
@@ -72,6 +72,18 @@
 - Se creó `loadProductionMonitoringModule.js` para montar Monitoring desde dataset HTML y facilitar testings desacoplados del runtime.
 - Se agregó `index.js` del módulo Monitoring para cargar automáticamente `ProductionMonitoringModule.vue` sobre `#production-monitoring-module`.
 - Se actualizaron pruebas unitarias en `tests/monitoring.unit.js` para validar lectura de dataset, listeners fallback y montaje controlado del loader.
+
+
+### 2026-03-30
+- Se agregaron datos ficticios centralizados en `mockMonitoringData.js` para cubrir validaciones clave del módulo: `sin detalle`, `cargando`, `error`, `sin preview` y `con preview`.
+- Se incorporó un mecanismo en `index.js` para activar escenarios mock desde `window.__PRODUCTION_MONITORING_USE_MOCK__` y seleccionar caso con `window.__PRODUCTION_MONITORING_MOCK_SCENARIO__`.
+- Se verificó que las pruebas unitarias existentes de Monitoring continúan pasando sin acoplar persistencia ni backend.
+- Se actualizó `public/index.html` para inyectar `dataset` inicial del contenedor (`data-production`, `data-detail`, `data-preview`, banderas de estado) y activar mock local (`conPreview`) para validar carga inmediata del módulo.
+- Se amplió `ProductionMonitoringViewer.vue` para dividir la visualización en mapa + tabla de lecturas satelitales, galería de screenshots y bloque opcional para inspección JSON de monitoreo.
+- Se integró `vue2-google-maps` en el `index.js` de Monitoring usando `window.appConfig.mapKey` y `window.appConfig.mapLibreries`, y el Viewer ahora renderiza polígonos reales sobre Google Maps (satellite).
+- Se agregó fallback local en `ProductionMonitoringViewer.vue` para evitar warning de componentes `GmapMap/GmapPolygon` no registrados cuando el plugin no se inicializa (ej. key ausente o carga diferida).
+- Se agregó normalización de contratos DynamoDB/MySQL en el contenedor de Monitoring para soportar `production_monitoring` y `detalle` reales: parseo de `S/N/BOOL/L/M`, polígono de producción tipo `lat,long|...`, y visualización del área monitoreada (bbox) + polígono de producción dentro de Google Maps.
+
 
 ---
 
