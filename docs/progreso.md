@@ -85,6 +85,7 @@
 - Se agregó normalización de contratos DynamoDB/MySQL en el contenedor de Monitoring para soportar `production_monitoring` y `detalle` reales: parseo de `S/N/BOOL/L/M`, polígono de producción tipo `lat,long|...`, y visualización del área monitoreada (bbox) + polígono de producción dentro de Google Maps.
 - Se corrigió warning de Vue por `monitoringAreaOptions` moviendo la definición al bloque `computed` de `ProductionMonitoringViewer.vue`.
 - Se actualizaron mocks a contratos reales enviados (DynamoDB + MySQL) y se agregó previsualización local generada (SVG data-uri) cuando aún no existe imagen renderizada persistida.
+- Se creó la librería `monitoringSceneLibrary.js` con timeline/navegador de fechas, estado de escena, generación de previews (`natural`, `false color`, `SWIR-NIR-RED`, `NDVI`) mediante `geotiff`, utilidades Leaflet (`bbox/imageBounds/polígonos`) y helpers para guardar blobs.
 
 
 ---
