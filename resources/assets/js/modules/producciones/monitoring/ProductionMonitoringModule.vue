@@ -1,15 +1,19 @@
 <template>
   <section class="pm-module">
     <ProductionMonitoringViewer
-      :detail="detail"
+      :production="normalizedProduction"
+      :detail="normalizedDetail"
       :preview="normalizedPreview"
+      :renderer-data="effectiveRenderData"
+      :timeline-items="timelineItems"
+      :scene-status="sceneStatus"
       :selected-date="selectedDate"
       :loading="loading"
       :error="moduleError"
     />
 
     <ProductionMonitoringRenderer
-      :detail="detail"
+      :detail="normalizedDetail"
       :preview="normalizedPreview"
       :renderer-data="effectiveRenderData"
       :selected-date="selectedDate"
@@ -47,6 +51,99 @@
 import ProductionMonitoringViewer from './components/ProductionMonitoringViewer.vue';
 import ProductionMonitoringRenderer from './components/ProductionMonitoringRenderer.vue';
 import ProductionMonitoringActions from './components/ProductionMonitoringActions.vue';
+const sceneLibrary = typeof require === 'function'
+  ? require('./utils/monitoringSceneLibrary')
+  : {};
+
+function isObject(value) {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+function unwrapDynamo(value) {
+  if (!isObject(value)) return value;
+  if (Object.prototype.hasOwnProperty.call(value, 'S')) return value.S;
+  if (Object.prototype.hasOwnProperty.call(value, 'N')) {
+    const parsed = Number(value.N);
+    return Number.isNaN(parsed) ? value.N : parsed;
+  }
+  if (Object.prototype.hasOwnProperty.call(value, 'BOOL')) return !!value.BOOL;
+  if (Object.prototype.hasOwnProperty.call(value, 'L')) return (value.L || []).map(unwrapDynamo);
+  if (Object.prototype.hasOwnProperty.call(value, 'M')) {
+    const out = {};
+    Object.keys(value.M || {}).forEach((k) => {
+      out[k] = unwrapDynamo(value.M[k]);
+    });
+    return out;
+  }
+  const out = {};
+  Object.keys(value).forEach((k) => {
+    out[k] = unwrapDynamo(value[k]);
+  });
+  return out;
+}
+
+function parseMysqlPolygon(value) {
+  if (!value || typeof value !== 'string') return [];
+  return value.split('|').map((pair) => {
+    const coords = pair.split(',').map((n) => Number(String(n).trim()));
+    if (coords.length < 2 || Number.isNaN(coords[0]) || Number.isNaN(coords[1])) return null;
+    return { lat: coords[0], lng: coords[1] };
+  }).filter(Boolean);
+}
+
+function normalizePolygon(rawPolygon) {
+  if (!rawPolygon) return null;
+  if (isObject(rawPolygon) && rawPolygon.type === 'Polygon') return rawPolygon;
+  if (!Array.isArray(rawPolygon)) return null;
+  const ring = rawPolygon.map((point) => {
+    if (!Array.isArray(point) || point.length < 2) return null;
+    const lat = Number(point[0]);
+    const lng = Number(point[1]);
+    if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
+    return [lng, lat];
+  }).filter(Boolean);
+  if (!ring.length) return null;
+  const first = ring[0];
+  const last = ring[ring.length - 1];
+  if (first[0] !== last[0] || first[1] !== last[1]) ring.push([first[0], first[1]]);
+  return { type: 'Polygon', coordinates: [ring] };
+}
+
+function bboxToPolygon(bbox) {
+  if (!Array.isArray(bbox) || bbox.length < 4) return null;
+  const minLon = Number(bbox[0]);
+  const minLat = Number(bbox[1]);
+  const maxLon = Number(bbox[2]);
+  const maxLat = Number(bbox[3]);
+  if ([minLon, minLat, maxLon, maxLat].some(Number.isNaN)) return null;
+  return {
+    type: 'Polygon',
+    coordinates: [[
+      [minLon, minLat],
+      [maxLon, minLat],
+      [maxLon, maxLat],
+      [minLon, maxLat],
+      [minLon, minLat]
+    ]]
+  };
+}
+
+function normalizeProduction(rawProduction) {
+  const production = unwrapDynamo(rawProduction || {});
+  const pbox = production && production.pbox ? production.pbox : null;
+  return Object.assign({}, production, {
+    poligono_points: parseMysqlPolygon(production && production.poligono),
+    pbox_polygon: normalizePolygon(pbox && pbox.puntos_bbox) || bboxToPolygon(pbox && pbox.pbox)
+  });
+}
+
+function normalizeDetail(rawDetail) {
+  const detail = unwrapDynamo(rawDetail || {});
+  return Object.assign({}, detail, {
+    polygon: normalizePolygon(detail.polygon),
+    bbox_polygon: bboxToPolygon(detail.bbox)
+  });
+}
 
 export default {
   name: 'ProductionMonitoringModule',
@@ -67,6 +164,10 @@ export default {
     preview: {
       type: Object,
       default: () => ({})
+    },
+    details: {
+      type: Array,
+      default: () => []
     },
     rendererData: {
       type: Object,
@@ -110,11 +211,47 @@ export default {
   computed: {
     normalizedPreview() {
       const incoming = this.preview || {};
+      const fromDetail = this.normalizedDetail || {};
       return {
-        json: Object.assign({ exists: false, url: null, key: null }, incoming.json || {}),
-        svg: Object.assign({ exists: false, url: null, key: null }, incoming.svg || {}),
-        png: Object.assign({ exists: false, url: null, key: null }, incoming.png || {})
+        json: Object.assign({ exists: false, url: null, key: null }, incoming.json || {}, {
+          url: (incoming.json && incoming.json.url) || fromDetail.preview_json || null,
+          exists: (incoming.json && incoming.json.exists) || !!fromDetail.preview_json
+        }),
+        svg: Object.assign({ exists: false, url: null, key: null }, incoming.svg || {}, {
+          url: (incoming.svg && incoming.svg.url) || fromDetail.preview_svg || null,
+          exists: (incoming.svg && incoming.svg.exists) || !!fromDetail.preview_svg
+        }),
+        png: Object.assign({ exists: false, url: null, key: null }, incoming.png || {}, {
+          url: (incoming.png && incoming.png.url) || fromDetail.preview_image || null,
+          exists: (incoming.png && incoming.png.exists) || !!fromDetail.preview_image
+        })
       };
+    },
+    normalizedProduction() {
+      return normalizeProduction(this.production);
+    },
+    normalizedDetail() {
+      return normalizeDetail(this.detail);
+    },
+    normalizedDetails() {
+      const items = this.details && this.details.length ? this.details : (this.detail ? [this.detail] : []);
+      return items.map((item) => normalizeDetail(item));
+    },
+    timelineItems() {
+      if (sceneLibrary.buildTimelineItems) {
+        return sceneLibrary.buildTimelineItems(this.normalizedDetails);
+      }
+      return this.normalizedDetails.map((detail) => ({
+        date: detail.fecha || detail.scene_created || null,
+        status: 'unknown',
+        detail
+      })).filter((item) => !!item.date);
+    },
+    sceneStatus() {
+      if (sceneLibrary.resolveSceneStatus) {
+        return sceneLibrary.resolveSceneStatus(this.normalizedDetail);
+      }
+      return this.hasDetail ? 'unknown' : 'no-detail';
     },
     effectiveRenderData() {
       return this.rendererData || this.localRenderResult || null;
@@ -123,7 +260,7 @@ export default {
       return this.error || this.localRenderError;
     },
     hasDetail() {
-      return !!this.detail && Object.keys(this.detail).length > 0;
+      return !!this.normalizedDetail && Object.keys(this.normalizedDetail).length > 0;
     },
     hasJsonPreview() {
       return !!(this.normalizedPreview.json && this.normalizedPreview.json.exists);
@@ -165,8 +302,8 @@ export default {
   methods: {
     basePayload() {
       return {
-        production: this.production,
-        detail: this.detail,
+        production: this.normalizedProduction,
+        detail: this.normalizedDetail,
         selectedDate: this.selectedDate,
         rendererData: this.effectiveRenderData
       };
