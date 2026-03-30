@@ -186,8 +186,32 @@
 </template>
 
 <script>
+import Vue from 'vue';
+
+const FallbackMap = {
+  name: 'FallbackMap',
+  functional: true,
+  render(createElement, context) {
+    return createElement('div', {
+      staticClass: 'pm-map-fallback'
+    }, context.children);
+  }
+};
+
+const FallbackPolygon = {
+  name: 'FallbackPolygon',
+  functional: true,
+  render(createElement) {
+    return createElement();
+  }
+};
+
 export default {
   name: 'ProductionMonitoringViewer',
+  components: {
+    GmapMap: Vue.options.components.GmapMap || FallbackMap,
+    GmapPolygon: Vue.options.components.GmapPolygon || FallbackPolygon
+  },
   props: {
     production: {
       type: Object,
@@ -438,6 +462,13 @@ export default {
   border-radius: 10px;
   padding: 8px;
   background: #fafafa;
+}
+
+.pm-map-fallback {
+  height: 320px;
+  width: 100%;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #eceff1, #f5f5f5);
 }
 
 .pm-map-note {
