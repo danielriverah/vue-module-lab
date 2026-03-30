@@ -42,7 +42,19 @@
 							></asign-map-zona>
 						</div>
 						<button onClick="actionClick()">Tests Articulo lote</button> -->
-						<div id="production-monitoring-module">
+						<div id="production-monitoring-module"
+							data-monitoring-module
+							data-production='{"produccion_id":1001,"folio":"PROD-2026-0001","estatus":"ACTIVA","fecha_siembra":"2025-11-08","ultima_fecha_consultada":"2026-03-29","dias_max_monitoreo":240,"pbox":[-116.22,31.74,-116.11,31.86]}'
+							data-detail='{"id":501,"clave":"S2A_20260329_31QCV","folio":"DET-2026-03-29-A","fecha":"2026-03-29","cloud_cover":8.6,"bbox":[-116.22,31.74,-116.11,31.86],"collection":"sentinel-2-l2a","scene_created":"2026-03-29T15:22:10Z","procesado":true,"renderizado":false,"bandas":["B02","B03","B04","B08"]}'
+							data-preview='{"json":{"exists":false,"url":null,"key":null},"svg":{"exists":false,"url":null,"key":null},"png":{"exists":false,"url":null,"key":null}}'
+							data-renderer-data=''
+							data-selected-date='2026-03-29'
+							data-loading='false'
+							data-updating='false'
+							data-rendering='false'
+							data-saving-svg='false'
+							data-saving-png='false'
+							data-error=''>
 							<ProductionMonitoringModule></ProductionMonitoringModule>
 						</div>
 					</div>
@@ -102,6 +114,13 @@
 		<!-- <script src="js/modules/activities/assets/activitiesApp.js"></script> -->
 		<!-- <script src="/js/core/tester.js"></script> -->
 		<!-- <script src="/js/modules/lotes/updateLoteZona.js"></script> -->
+
+		<script>
+			// Activar mocks de Monitoring para validar estados en ambiente local.
+			window.__PRODUCTION_MONITORING_USE_MOCK__ = true;
+			window.__PRODUCTION_MONITORING_MOCK_SCENARIO__ = 'conPreview';
+		</script>
+
 		<script src="/js/modules/producciones/monitoring/assets/index.js"></script>
 
 		<script>
