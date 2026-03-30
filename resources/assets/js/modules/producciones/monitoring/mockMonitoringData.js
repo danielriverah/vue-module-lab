@@ -69,6 +69,12 @@ const MOCK_RENDERER_DATA = {
       }
     ]
   },
+  readings: [
+    { label: 'NDVI', value: '0.72' },
+    { label: 'Humedad estimada', value: '61%' },
+    { label: 'Temperatura superficie', value: '28.4°C' },
+    { label: 'Cobertura nubosa', value: '8.6%' }
+  ],
   dimensions: { width: 640, height: 320 },
   style: { palette: 'teal-indigo', opacity: 0.8 }
 };

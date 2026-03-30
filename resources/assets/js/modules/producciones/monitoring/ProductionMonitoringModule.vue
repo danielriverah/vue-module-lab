@@ -1,8 +1,10 @@
 <template>
   <section class="pm-module">
     <ProductionMonitoringViewer
+      :production="production"
       :detail="detail"
       :preview="normalizedPreview"
+      :renderer-data="effectiveRenderData"
       :selected-date="selectedDate"
       :loading="loading"
       :error="moduleError"

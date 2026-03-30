@@ -79,6 +79,7 @@
 - Se incorporó un mecanismo en `index.js` para activar escenarios mock desde `window.__PRODUCTION_MONITORING_USE_MOCK__` y seleccionar caso con `window.__PRODUCTION_MONITORING_MOCK_SCENARIO__`.
 - Se verificó que las pruebas unitarias existentes de Monitoring continúan pasando sin acoplar persistencia ni backend.
 - Se actualizó `public/index.html` para inyectar `dataset` inicial del contenedor (`data-production`, `data-detail`, `data-preview`, banderas de estado) y activar mock local (`conPreview`) para validar carga inmediata del módulo.
+- Se amplió `ProductionMonitoringViewer.vue` para dividir la visualización en mapa + tabla de lecturas satelitales, galería de screenshots y bloque opcional para inspección JSON de monitoreo.
 
 
 ---

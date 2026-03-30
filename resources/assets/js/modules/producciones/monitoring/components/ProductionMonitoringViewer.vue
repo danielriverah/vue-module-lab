@@ -100,6 +100,80 @@
               </p>
             </div>
           </div>
+
+          <div class="col s12">
+            <div class="card-panel pm-panel">
+              <h6 class="pm-panel-title">Mapa + lecturas satelitales</h6>
+              <div class="row">
+                <div class="col s12 l7">
+                  <div class="pm-map-canvas">
+                    <svg viewBox="0 0 100 100" class="pm-map-svg" role="img" aria-label="Mapa de monitoreo">
+                      <polygon
+                        v-if="detailPolygonPoints"
+                        :points="detailPolygonPoints"
+                        class="pm-map-polygon pm-map-polygon--detail"
+                      />
+                      <polygon
+                        v-if="monitoredPolygonPoints"
+                        :points="monitoredPolygonPoints"
+                        class="pm-map-polygon pm-map-polygon--monitored"
+                      />
+                    </svg>
+                    <p class="pm-map-note">
+                      Área monitoreada + polígono base. Se usa para preparar la imagen final por screenshot.
+                    </p>
+                  </div>
+                </div>
+                <div class="col s12 l5">
+                  <table class="striped highlight responsive-table pm-reading-table">
+                    <thead>
+                      <tr>
+                        <th>Lectura</th>
+                        <th>Valor</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(item, idx) in satelliteReadings" :key="item.label + '-' + idx">
+                        <td>{{ item.label }}</td>
+                        <td>{{ item.value }}</td>
+                      </tr>
+                      <tr v-if="satelliteReadings.length === 0">
+                        <td colspan="2" class="grey-text text-darken-1">Sin lecturas satelitales disponibles.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col s12">
+            <div class="card-panel pm-panel">
+              <h6 class="pm-panel-title">Screenshots / imágenes de monitoreo</h6>
+              <div class="pm-shot-grid">
+                <img
+                  v-for="(shot, index) in screenshotImages"
+                  :key="shot.url + '-' + index"
+                  :src="shot.url"
+                  :alt="shot.label"
+                  class="z-depth-1 pm-shot-image"
+                />
+                <p v-if="screenshotImages.length === 0" class="grey-text text-darken-1">
+                  No hay screenshots disponibles aún.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col s12">
+            <div class="card-panel pm-panel">
+              <h6 class="pm-panel-title">JSON de monitoreo (opcional)</h6>
+              <details class="pm-json-wrapper">
+                <summary>Ver JSON</summary>
+                <pre class="pm-json-content">{{ monitoringJson }}</pre>
+              </details>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -125,6 +199,10 @@ export default {
         svg: { exists: false, url: null, key: null },
         png: { exists: false, url: null, key: null }
       })
+    },
+    rendererData: {
+      type: Object,
+      default: null
     },
     selectedDate: {
       type: String,
@@ -158,6 +236,43 @@ export default {
     hasError() {
       return !!this.error;
     },
+    detailPolygonPoints() {
+      const polygon = this.detail && this.detail.polygon ? this.detail.polygon : null;
+      return this.polygonToSvgPoints(polygon);
+    },
+    monitoredPolygonPoints() {
+      const feature = this.rendererData &&
+        this.rendererData.geojson &&
+        this.rendererData.geojson.features &&
+        this.rendererData.geojson.features[0];
+
+      const polygon = feature && feature.geometry ? feature.geometry : null;
+      return this.polygonToSvgPoints(polygon);
+    },
+    satelliteReadings() {
+      const readings = this.rendererData && Array.isArray(this.rendererData.readings)
+        ? this.rendererData.readings
+        : [];
+      return readings;
+    },
+    screenshotImages() {
+      const images = [];
+      if (this.preview && this.preview.png && this.preview.png.url) {
+        images.push({ label: 'Preview PNG persistido', url: this.preview.png.url });
+      }
+      if (this.rendererData && this.rendererData.imageUrl) {
+        images.push({ label: 'Render temporal', url: this.rendererData.imageUrl });
+      }
+      return images;
+    },
+    monitoringJson() {
+      const payload = {
+        detail: this.detail || null,
+        preview: this.preview || null,
+        rendererData: this.rendererData || null
+      };
+      return JSON.stringify(payload, null, 2);
+    },
     errorMessage() {
       if (!this.error) {
         return '';
@@ -179,6 +294,29 @@ export default {
       return available
         ? 'new badge green lighten-4 green-text text-darken-3 pm-badge'
         : 'new badge grey lighten-3 grey-text text-darken-2 pm-badge';
+    },
+    polygonToSvgPoints(polygon) {
+      if (!polygon || !polygon.coordinates || !Array.isArray(polygon.coordinates[0])) {
+        return '';
+      }
+
+      const coords = polygon.coordinates[0];
+      const lons = coords.map((point) => point[0]);
+      const lats = coords.map((point) => point[1]);
+      const minLon = Math.min.apply(null, lons);
+      const maxLon = Math.max.apply(null, lons);
+      const minLat = Math.min.apply(null, lats);
+      const maxLat = Math.max.apply(null, lats);
+      const lonRange = maxLon - minLon || 1;
+      const latRange = maxLat - minLat || 1;
+
+      return coords
+        .map((point) => {
+          const x = ((point[0] - minLon) / lonRange) * 94 + 3;
+          const y = 97 - ((point[1] - minLat) / latRange) * 94;
+          return x.toFixed(2) + ',' + y.toFixed(2);
+        })
+        .join(' ');
     }
   }
 };
@@ -267,5 +405,72 @@ export default {
 
 .pm-empty-preview {
   margin-top: 10px;
+}
+
+.pm-map-canvas {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 8px;
+  background: #fafafa;
+}
+
+.pm-map-svg {
+  width: 100%;
+  min-height: 280px;
+  background: linear-gradient(180deg, #e8f5e9, #e3f2fd);
+  border-radius: 8px;
+}
+
+.pm-map-polygon {
+  stroke-width: 1;
+}
+
+.pm-map-polygon--detail {
+  fill: rgba(30, 136, 229, 0.25);
+  stroke: #1e88e5;
+}
+
+.pm-map-polygon--monitored {
+  fill: rgba(67, 160, 71, 0.35);
+  stroke: #2e7d32;
+}
+
+.pm-map-note {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  color: #616161;
+}
+
+.pm-reading-table {
+  font-size: 0.9rem;
+}
+
+.pm-shot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.pm-shot-image {
+  width: 100%;
+  min-height: 150px;
+  border-radius: 8px;
+  background: #f5f5f5;
+  object-fit: cover;
+}
+
+.pm-json-wrapper summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.pm-json-content {
+  margin-top: 10px;
+  max-height: 280px;
+  overflow: auto;
+  background: #263238;
+  color: #eceff1;
+  padding: 10px;
+  border-radius: 8px;
 }
 </style>
