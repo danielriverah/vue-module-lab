@@ -26,34 +26,50 @@ const MOCK_BASE_PRODUCTION = {
 };
 
 const MOCK_BASE_DETAIL = {
-  id: { S: 'PROD#1891' },
-  clave: { S: 'S2A_14QKJ_20260326_0_L2A' },
-  band_blue: { S: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/3/S2A_14QKJ_20260326_0_L2A/B02.tif' },
-  band_green: { S: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/3/S2A_14QKJ_20260326_0_L2A/B03.tif' },
-  band_nir: { S: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/3/S2A_14QKJ_20260326_0_L2A/B08.tif' },
-  band_red: { S: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/3/S2A_14QKJ_20260326_0_L2A/B04.tif' },
-  band_rededge1: { S: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/3/S2A_14QKJ_20260326_0_L2A/B05.tif' },
-  band_rededge3: { S: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/3/S2A_14QKJ_20260326_0_L2A/B07.tif' },
-  band_swir16: { S: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/3/S2A_14QKJ_20260326_0_L2A/B11.tif' },
-  bbox: { L: [{ N: '-101.899168' }, { N: '20.687254' }, { N: '-100.826462' }, { N: '21.693213' }] },
-  cloud_cover: { N: '0' },
-  collection: { S: 'sentinel-2-l2a' },
-  fecha: { S: '2026-03-27' },
-  folio: { S: 'TL2601-37' },
-  polygon: {
-    L: [
-      { L: [{ N: '21.117377777778' }, { N: '-100.90081111111' }] },
-      { L: [{ N: '21.117377777778' }, { N: '-100.89793055556' }] },
-      { L: [{ N: '21.121158333333' }, { N: '-100.89793055556' }] },
-      { L: [{ N: '21.121158333333' }, { N: '-100.90081111111' }] }
-    ]
-  },
-  preview_image: { S: 's3://sentinela-monitoring/previews/PROD_1891/2026-03-27_S2A_14QKJ_20260326_0_L2A.png' },
-  preview_json: { S: 's3://sentinela-monitoring/previews/PROD_1891/2026-03-27_S2A_14QKJ_20260326_0_L2A.json' },
-  preview_svg: { S: 's3://sentinela-monitoring/previews/PROD_1891/2026-03-27_S2A_14QKJ_20260326_0_L2A.svg' },
-  procesado: { BOOL: false },
-  renderizado: { BOOL: false },
-  scene_created: { S: '2026-03-27T05:24:14.229Z' }
+  "band_rededge3": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/2/S2A_14QKJ_20260207_0_L2A/B07.tif",
+  "band_swir16": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/2/S2A_14QKJ_20260207_0_L2A/B11.tif",
+  "band_rededge1": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/2/S2A_14QKJ_20260207_0_L2A/B05.tif",
+  "band_rededge2": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/2/S2A_14QKJ_20260207_0_L2A/B06.tif",
+  "collection": "sentinel-2-l2a",
+  "preview_json": "s3://sentinela-monitoring/previews/PROD_1987/2026-02-07_S2A_14QKJ_20260207_0_L2A.json",
+  "preview_image": "s3://sentinela-monitoring/previews/PROD_1987/2026-02-07_S2A_14QKJ_20260207_0_L2A.png",
+  "scene_created": "2026-02-07T20:35:19.641Z",
+  "band_green": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/2/S2A_14QKJ_20260207_0_L2A/B03.tif",
+  "cloud_cover": 32.854462,
+  "band_blue": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/2/S2A_14QKJ_20260207_0_L2A/B02.tif",
+  "preview_svg": "s3://sentinela-monitoring/previews/PROD_1987/2026-02-07_S2A_14QKJ_20260207_0_L2A.svg",
+  "folio": "TL2601-04",
+  "procesado": false,
+  "bbox": [
+      -101.895188,
+      20.699693,
+      -100.827434,
+      21.478079
+  ],
+  "polygon": [
+      [
+          21.122813888889,
+          -100.89053055556
+      ],
+      [
+          21.122813888889,
+          -100.88798333333
+      ],
+      [
+          21.126355555556,
+          -100.88798333333
+      ],
+      [
+          21.126355555556,
+          -100.89053055556
+      ]
+  ],
+  "band_nir": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/2/S2A_14QKJ_20260207_0_L2A/B08.tif",
+  "renderizado": false,
+  "id": "PROD#1987",
+  "clave": "S2A_14QKJ_20260207_0_L2A",
+  "fecha": "2026-02-07",
+  "band_red": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/14/Q/KJ/2026/2/S2A_14QKJ_20260207_0_L2A/B04.tif"
 };
 
 const MOCK_PREVIEW_EMPTY = {
