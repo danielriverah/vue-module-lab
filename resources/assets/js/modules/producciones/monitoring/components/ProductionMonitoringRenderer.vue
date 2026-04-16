@@ -66,7 +66,8 @@ export default {
         metadata: null
       },
       renderError: null,
-      lastRequestSignature: null
+      lastRequestSignature: null,
+      lastReadySignature: null
     };
   },
   computed: {
@@ -81,7 +82,29 @@ export default {
     },
     hasRenderableData() {
       const data = this.rendererData || {};
-      return !!(data.svgContent || data.imageUrl || data.geojson || this.hasJsonPreview);
+      return !!(
+        data.svgContent ||
+        data.imageUrl ||
+        data.geojson ||
+        data.geotiffBands ||
+        this.hasJsonPreview ||
+        this.hasGeoTiffBands
+      );
+    },
+    hasGeoTiffBands() {
+      if (!this.detail) {
+        return false;
+      }
+      const bandKeys = [
+        'band_blue',
+        'band_green',
+        'band_red',
+        'band_nir',
+        'band_rededge1',
+        'band_rededge3',
+        'band_swir16'
+      ];
+      return bandKeys.some((key) => !!this.detail[key]);
     },
     canRequestRender() {
       return this.hasDetail && !this.hasPngPreview && !this.hasRenderableData;
@@ -126,6 +149,7 @@ export default {
 
       if (this.availabilityCase === 'A') {
         this.lastRequestSignature = null;
+        this.lastReadySignature = null;
         this.renderOutput = { svgContent: null, imageUrl: null, metadata: { source: 'png-preview' } };
         return;
       }
@@ -147,18 +171,29 @@ export default {
     prepareRenderOutput() {
       try {
         const data = this.rendererData || {};
+        const geotiffBands = data.geotiffBands || {
+          blue: this.detail && this.detail.band_blue ? this.detail.band_blue : null,
+          green: this.detail && this.detail.band_green ? this.detail.band_green : null,
+          red: this.detail && this.detail.band_red ? this.detail.band_red : null,
+          nir: this.detail && this.detail.band_nir ? this.detail.band_nir : null,
+          rededge1: this.detail && this.detail.band_rededge1 ? this.detail.band_rededge1 : null,
+          rededge3: this.detail && this.detail.band_rededge3 ? this.detail.band_rededge3 : null,
+          swir16: this.detail && this.detail.band_swir16 ? this.detail.band_swir16 : null
+        };
         const fallbackSvg = this.hasJsonPreview
           ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120"><rect width="420" height="120" fill="#f5f5f5"/><text x="20" y="65" fill="#424242" font-size="16">JSON disponible: listo para render definitivo</text></svg>'
-          : null;
+          : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200"><rect width="640" height="200" fill="#eceff1"/><text x="20" y="52" fill="#263238" font-size="22">Render GeoTIFF pendiente</text><text x="20" y="88" fill="#455a64" font-size="16">La imagen final se generará desde bandas satelitales.</text><text x="20" y="118" fill="#455a64" font-size="14">Siempre se forza render temporal (preview API pendiente).</text></svg>';
 
         const payload = {
           svgContent: data.svgContent || fallbackSvg,
           imageUrl: data.imageUrl || null,
           pngSource: data.imageUrl || null,
+          geotiffBands,
           metadata: {
             detailId: this.detail && this.detail.id ? this.detail.id : null,
             selectedDate: this.selectedDate,
-            source: data.svgContent || data.imageUrl ? 'rendererData' : 'preview-json'
+            source: data.svgContent || data.imageUrl ? 'rendererData' : (this.hasJsonPreview ? 'preview-json' : 'geotiff-bands'),
+            strategy: this.hasGeoTiffBands ? 'render-from-geotiff' : 'await-render-data'
           }
         };
 
@@ -167,8 +202,19 @@ export default {
           imageUrl: payload.imageUrl,
           metadata: payload.metadata
         };
+        const readySignature = [
+          this.selectedDate || '',
+          payload.metadata && payload.metadata.detailId ? payload.metadata.detailId : '',
+          payload.metadata && payload.metadata.source ? payload.metadata.source : '',
+          payload.metadata && payload.metadata.strategy ? payload.metadata.strategy : '',
+          payload.imageUrl || '',
+          payload.svgContent ? payload.svgContent.length : 0
+        ].join('|');
 
-        this.$emit('render-ready', payload);
+        if (this.lastReadySignature !== readySignature) {
+          this.lastReadySignature = readySignature;
+          this.$emit('render-ready', payload);
+        }
       } catch (error) {
         const message = error && error.message ? error.message : 'Error al preparar render temporal.';
         this.renderError = message;
@@ -191,10 +237,12 @@ export default {
       }
 
       this.lastRequestSignature = signature;
+      this.lastReadySignature = null;
       this.$emit('request-render', {
         detail: this.detail,
         selectedDate: this.selectedDate,
-        reason: 'missing-preview-and-render-data'
+        reason: 'missing-preview-and-render-data',
+        strategy: this.hasGeoTiffBands ? 'render-from-geotiff' : 'await-geotiff-bands'
       });
     }
   }

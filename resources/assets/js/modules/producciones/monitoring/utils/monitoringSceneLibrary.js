@@ -2,6 +2,13 @@
  * Monitoring Scene Library
  * Requiere dependencia frontend: `npm i geotiff`
  */
+const IMAGE_TYPE_BANDS = {
+  'natural-color': ['red', 'green', 'blue'],
+  'false-color-vegetation': ['nir', 'red', 'green'],
+  'swir-nir-red': ['swir16', 'nir', 'red'],
+  'ndvi': ['nir', 'red']
+};
+
 const DEFAULT_PREVIEW_SIZE = 512;
 
 function isObject(value) {
@@ -149,13 +156,13 @@ async function loadGeoTiffModule() {
   return mod;
 }
 
-async function readBandRaster(url) {
+async function readBandRaster(url,bbox) {
   const response = await fetch(url);
   const arrayBuffer = await response.arrayBuffer();
   const geotiff = await loadGeoTiffModule();
   const tiff = await geotiff.fromArrayBuffer(arrayBuffer);
   const image = await tiff.getImage();
-  const raster = await image.readRasters({ interleave: false });
+  const raster = await image.readRasters({ interleave: false,window:bbox });
   return {
     data: raster[0],
     width: image.getWidth(),

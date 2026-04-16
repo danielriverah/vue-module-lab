@@ -4987,7 +4987,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 //
 //
 
-__webpack_require__.e(/*! import() */ 4).then(__webpack_require__.t.bind(null, /*! vue-select/dist/vue-select.css */ "./node_modules/vue-select/dist/vue-select.css", 7));
+__webpack_require__.e(/*! import() */ 2).then(__webpack_require__.t.bind(null, /*! vue-select/dist/vue-select.css */ "./node_modules/vue-select/dist/vue-select.css", 7));
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "UiSelect",

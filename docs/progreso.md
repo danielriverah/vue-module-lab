@@ -87,6 +87,13 @@
 - Se actualizaron mocks a contratos reales enviados (DynamoDB + MySQL) y se agregó previsualización local generada (SVG data-uri) cuando aún no existe imagen renderizada persistida.
 - Se creó la librería `monitoringSceneLibrary.js` con timeline/navegador de fechas, estado de escena, generación de previews (`natural`, `false color`, `SWIR-NIR-RED`, `NDVI`) mediante `geotiff`, utilidades Leaflet (`bbox/imageBounds/polígonos`) y helpers para guardar blobs.
 - Se integró la librería en `ProductionMonitoringModule.vue` para exponer `timelineItems` y `sceneStatus` al Viewer, y se añadió documentación breve de uso en `docs/modulos/producciones/Monitoring/monitoring_scene_library.md`.
+- Se incorporó soporte de payload real de DynamoDB en formato agregado (`prod` + `detalle[]`) mediante la nueva prop `monitoringPayload`, priorizando el último detalle disponible para selección inicial.
+- Se forzó el estado de previews (`json/svg/png`) como `pendiente` aun cuando existan keys S3, para que el flujo renderice siempre desde bandas GeoTIFF mientras la API de previews queda pendiente de integración.
+- Se amplió el Renderer para considerar bandas GeoTIFF como fuente renderizable (`render-from-geotiff`) y emitir estrategia explícita en `request-render`.
+- Se documentaron en Viewer URLs pendientes de API de previews y campos adicionales relevantes (`ultima_fecha`, `scene_created`, `produccion` anidada en JSON).
+- Se actualizó `loadProductionMonitoringModule.js` para leer `data-monitoring-payload`/`data-monitoring-data` y `data-details`.
+- Se extendieron pruebas unitarias para cubrir parsing de payload agregado, URLs pendientes de preview API y compatibilidad del loader.
+- Se corrigió un bucle de inicialización en `ProductionMonitoringRenderer.vue` deduplicando emisiones `render-ready` por firma de salida para evitar espera indefinida al montar la vista.
 
 
 ---

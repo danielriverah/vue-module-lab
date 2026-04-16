@@ -13,10 +13,12 @@ mix.setPublicPath('public');
  |
  */
 
- mix.js('resources/assets/js/app.js', 'public/js')
+ mix
+    //.js('resources/assets/js/app.js', 'public/js')
     //.js('resources/assets/js/modules/updateLoteZona.js', 'public/js/modules/lotes')
-    .js('resources/assets/js/activitiesApp.js', 'public/js/modules/activities/assets')
-    .js('resources/assets/js/modules/producciones/monitoring/index.js', 'public/js/modules/producciones/monitoring/assets')
+    //.js('resources/assets/js/activitiesApp.js', 'public/js/modules/activities/assets')
+    // .js('resources/assets/js/modules/producciones/monitoring/index.js', 'public/js/modules/producciones/monitoring/assets')
+    .js('resources/assets/js/modules/producciones/time_line/index.js', 'public/js/modules/producciones/time_line/assets')
     .sass('resources/assets/sass/app.scss', 'public/css')
     /*.browserSync({
         proxy: 'http://localhost:8001', // Asegúrate de que esta URL sea la de tu Laravel en local

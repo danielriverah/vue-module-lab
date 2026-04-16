@@ -82,7 +82,8 @@ function run() {
       selectedDate: '2026-03-26',
       renderOutput: { svgContent: null, imageUrl: null, metadata: null },
       renderError: null,
-      lastRequestSignature: null
+      lastRequestSignature: null,
+      lastReadySignature: null
     };
     createEmitCollector(ctx);
 
@@ -108,6 +109,8 @@ function run() {
     Renderer.methods.prepareRenderOutput.call(ctx);
     assert.strictEqual(ctx.__emits[1].name, 'render-ready', 'prepareRenderOutput debe emitir render-ready');
     assert.ok(ctx.__emits[1].payload.svgContent, 'render-ready debe contener svgContent');
+    Renderer.methods.prepareRenderOutput.call(ctx);
+    assert.strictEqual(ctx.__emits.length, 2, 'render-ready no debe emitirse en bucle con misma firma');
   }
 
   // Module: integración de payload y datos efectivos
@@ -116,6 +119,7 @@ function run() {
       production: { produccion_id: 99 },
       detail: { id: 7 },
       preview: {},
+      monitoringPayload: null,
       rendererData: null,
       selectedDate: '2026-03-26',
       savingSvg: false,
@@ -148,7 +152,12 @@ function run() {
       dataset: {
         production: JSON.stringify({ produccion_id: 12 }),
         detail: JSON.stringify({ id: 77 }),
+        details: JSON.stringify([{ id: 77 }, { id: 78 }]),
         preview: JSON.stringify({ png: { exists: true } }),
+        monitoringPayload: JSON.stringify({
+          prod: { produccion_id: 1978, pbox: '{"pbox":[-101.9,22.2,-101.8,22.3]}' },
+          detalle: [{ id: 'PROD#1978', fecha: '2025-12-26', band_red: 'https://red.tif' }]
+        }),
         rendererData: '',
         selectedDate: '2026-03-27',
         loading: 'false',
@@ -162,6 +171,8 @@ function run() {
 
     const props = monitoringLoader.readDatasetProps(datasetElement);
     assert.strictEqual(props.production.produccion_id, 12, 'readDatasetProps debe leer production');
+    assert.strictEqual(props.details.length, 2, 'readDatasetProps debe leer details');
+    assert.strictEqual(props.monitoringPayload.prod.produccion_id, 1978, 'readDatasetProps debe leer monitoringPayload');
     assert.strictEqual(props.updating, true, 'readDatasetProps debe convertir flags booleanas');
     assert.strictEqual(props.savingPng, true, 'readDatasetProps debe convertir savingPng');
 
@@ -191,6 +202,38 @@ function run() {
     const vnode = mountedOptions.render((component, vnodeOptions) => ({ component, vnodeOptions }));
     assert.strictEqual(vnode.vnodeOptions.props.selectedDate, '2026-03-28', 'propsData explícito debe sobrescribir dataset');
     assert.strictEqual(vnode.vnodeOptions.props.detail.id, 77, 'props desde dataset deben llegar al render');
+  }
+
+  // Module: soporte payload Dynamo {prod, detalle[]} y preview API pendiente
+  {
+    const ctx = {
+      production: null,
+      detail: null,
+      details: [],
+      preview: {},
+      monitoringPayload: {
+        prod: {
+          produccion_id: 1978,
+          pbox: '{"puntos_bbox":[[22.219048592969,-101.89972425033],[22.219048592969,-101.8986728244],[22.219614725257,-101.8986728244],[22.219614725257,-101.89972425033]]}'
+        },
+        detalle: [
+          { id: 'PROD#1978', fecha: '2025-11-16' },
+          { id: 'PROD#1978', fecha: '2025-12-26', band_red: 'https://red.tif', produccion: { articulo: 'LECHUGA' } }
+        ]
+      },
+      rendererData: null,
+      selectedDate: '2025-12-26'
+    };
+
+    ctx.extractedPayload = Module.computed.extractedPayload.call(ctx);
+    ctx.normalizedProduction = Module.computed.normalizedProduction.call(ctx);
+    ctx.normalizedDetail = Module.computed.normalizedDetail.call(ctx);
+    ctx.normalizedPreview = Module.computed.normalizedPreview.call(ctx);
+
+    assert.strictEqual(ctx.normalizedProduction.produccion_id, 1978, 'normalizedProduction debe usar prod desde monitoringPayload');
+    assert.strictEqual(ctx.normalizedDetail.fecha, '2025-12-26', 'normalizedDetail debe usar último detalle por defecto');
+    assert.ok(ctx.normalizedPreview.png.pendingApiUrl, 'normalizedPreview debe incluir URL API pendiente');
+    assert.strictEqual(ctx.normalizedPreview.png.exists, false, 'normalizedPreview debe forzar pendiente para render geotiff');
   }
 
   console.log('All Monitoring unit tests passed.');
